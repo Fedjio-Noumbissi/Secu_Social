@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: secu-social
+    env: node
+    buildCommand: ""
+    startCommand: node server.js
