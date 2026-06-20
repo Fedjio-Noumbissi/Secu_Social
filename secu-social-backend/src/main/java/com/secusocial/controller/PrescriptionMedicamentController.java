@@ -22,6 +22,7 @@ public class PrescriptionMedicamentController {
 
   @PostMapping
   public ResponseEntity<PrescriptionMedicament> create(@RequestBody PrescriptionMedicament p) {
+    p.setId(null);
     return ResponseEntity.status(201).body(repo.save(p));
   }
 

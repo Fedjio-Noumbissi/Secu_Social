@@ -11,7 +11,7 @@ import { apiService } from '../../services/api';
 import { addFeuille, setFeuilles } from '../../features/feuillesMaladie/feuillesSlice';
 import { setAssures } from '../../features/assures/assuresSlice';
 import { setConsultations } from '../../features/consultations/consultationsSlice';
-import type { FeuilleMaladie, Assure, Consultation } from '../../types';
+import type { FeuilleMaladie, Assure, Consultation, PrescriptionMedicament } from '../../types';
 import { todayStr } from '../../utils/dateHelpers';
 import type { RootState } from '../../store';
 
@@ -29,6 +29,7 @@ const FeuilleFormPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
 
   const initialValues = {
     assureId: '',
@@ -44,12 +45,14 @@ const FeuilleFormPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aData, cData] = await Promise.all([
+        const [aData, cData, pData] = await Promise.all([
           apiService.get<Assure[]>('/assures'),
           apiService.get<Consultation[]>('/consultations'),
+          apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
         ]);
         dispatch(setAssures(aData));
         dispatch(setConsultations(cData));
+        setMedicamentOptions([...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort());
       } catch (err) {
         console.error('Erreur chargement', err);
       }
@@ -81,8 +84,11 @@ const FeuilleFormPage = () => {
       await apiService.post('/feuillesMaladie', newFeuille);
       dispatch(addFeuille(newFeuille));
       navigate('/feuilles-maladie');
-    } catch (err) {
-      setSubmitError('Erreur lors de l\'enregistrement.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || (err as Error)?.message
+        || 'Erreur lors de l\'enregistrement. Vérifiez les champs et réessayez.';
+      setSubmitError(msg);
     }
   };
 
@@ -120,7 +126,7 @@ const FeuilleFormPage = () => {
                     required
                   >
                     {assures.map((a) => (
-                      <MenuItem key={a.id} value={a.id}>
+                      <MenuItem key={a.id} value={String(a.id)}>
                         {a.nom} {a.prenom}
                       </MenuItem>
                     ))}
@@ -139,8 +145,9 @@ const FeuilleFormPage = () => {
                     helperText={touched.consultationId && errors.consultationId}
                     required
                   >
-                    {consultations
-                      .filter((c) => !values.assureId || c.assureId === values.assureId)
+                    {[...consultations]
+                      .sort((a, b) => b.date.localeCompare(a.date))
+                      .filter((c) => !values.assureId || String(c.assureId) === String(values.assureId))
                       .map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                           {c.date} - {c.motif}
@@ -182,10 +189,14 @@ const FeuilleFormPage = () => {
                     label="Médicaments prescrits"
                     value={values.medicamentsPrescrits}
                     onChange={handleChange}
-                    multiline
-                    rows={2}
                     placeholder="Ex: Paracétamol 500mg - 1 comprimé 3x/jour"
+                    inputProps={{ list: 'medicaments-list' }}
                   />
+                  <datalist id="medicaments-list">
+                    {medicamentOptions.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                  </datalist>
                 </Grid>
                 <Grid size={{ xs: 12 }}>
                   <TextField
