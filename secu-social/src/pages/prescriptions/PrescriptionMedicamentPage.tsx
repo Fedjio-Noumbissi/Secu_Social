@@ -23,21 +23,27 @@ const PrescriptionMedicamentPage = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const [assures, setAssures] = useState<Assure[]>([]);
+  const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchAssures = async () => {
+    const fetchData = async () => {
       try {
-        const data = await apiService.get<Assure[]>('/assures');
-        setAssures(data);
+        const [aData, pData] = await Promise.all([
+          apiService.get<Assure[]>('/assures'),
+          apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
+        ]);
+        setAssures(aData);
+        const unique = [...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort();
+        setMedicamentOptions(unique);
       } catch (err) {
         console.error('Erreur', err);
       }
       setLoading(false);
     };
-    fetchAssures();
+    fetchData();
   }, []);
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -57,8 +63,11 @@ const PrescriptionMedicamentPage = () => {
       };
       await apiService.post('/prescriptionsMedicaments', newPresc);
       setSuccess(true);
-    } catch (err) {
-      setSubmitError('Erreur lors de l\'enregistrement.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || (err as Error)?.message
+        || 'Erreur lors de l\'enregistrement. Vérifiez les champs et réessayez.';
+      setSubmitError(msg);
     }
   };
 
@@ -89,7 +98,7 @@ const PrescriptionMedicamentPage = () => {
         )}
 
         <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-          {({ values, errors, touched, handleChange, handleBlur }) => (
+          {({ values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
             <Form>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12 }}>
@@ -99,14 +108,14 @@ const PrescriptionMedicamentPage = () => {
                     name="assureId"
                     label="Patient"
                     value={values.assureId}
-                    onChange={handleChange}
+                    onChange={(e) => setFieldValue('assureId', String(e.target.value))}
                     onBlur={handleBlur}
                     error={touched.assureId && !!errors.assureId}
                     helperText={touched.assureId && errors.assureId}
                     required
                   >
                     {assures.map((a) => (
-                      <MenuItem key={a.id} value={a.id}>
+                      <MenuItem key={a.id} value={String(a.id)}>
                         {a.nom} {a.prenom}
                       </MenuItem>
                     ))}
@@ -124,7 +133,13 @@ const PrescriptionMedicamentPage = () => {
                     helperText={touched.medicament && errors.medicament}
                     placeholder="Ex: Paracétamol 500mg"
                     required
+                    inputProps={{ list: 'medicament-list' }}
                   />
+                  <datalist id="medicament-list">
+                    {medicamentOptions.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                  </datalist>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField

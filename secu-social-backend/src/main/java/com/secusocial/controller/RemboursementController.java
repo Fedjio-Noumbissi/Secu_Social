@@ -22,6 +22,7 @@ public class RemboursementController {
 
   @PostMapping
   public ResponseEntity<Remboursement> create(@RequestBody Remboursement r) {
+    r.setId(null);
     return ResponseEntity.status(201).body(repo.save(r));
   }
 

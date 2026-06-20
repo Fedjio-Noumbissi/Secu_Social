@@ -3,7 +3,7 @@ import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardHeader from '../components/layout/DashboardHeader';
 import DashboardFooter from '../components/layout/DashboardFooter';
-import Sidebar, { DRAWER_WIDTH } from '../components/layout/Sidebar';
+import Sidebar from '../components/layout/Sidebar';
 import PrintStyles from '../components/print/PrintStyles';
 
 interface DashboardLayoutProps {
@@ -35,7 +35,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           component="main"
           sx={{
             flex: 1,
-            ml: { md: `${DRAWER_WIDTH}px` },
             p: { xs: 2, md: 3 },
             display: 'flex',
             flexDirection: 'column',
@@ -45,7 +44,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {children}
         </Box>
       </Box>
-      <Box sx={{ ml: { md: `${DRAWER_WIDTH}px` } }}>
+      <Box>
         <DashboardFooter />
       </Box>
     </Box>

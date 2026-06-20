@@ -22,6 +22,7 @@ public class MedecinController {
 
   @PostMapping
   public ResponseEntity<Medecin> create(@RequestBody Medecin m) {
+    m.setId(null);
     return ResponseEntity.status(201).body(repo.save(m));
   }
 

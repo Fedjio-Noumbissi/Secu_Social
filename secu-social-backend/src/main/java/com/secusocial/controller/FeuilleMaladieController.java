@@ -22,6 +22,7 @@ public class FeuilleMaladieController {
 
   @PostMapping
   public ResponseEntity<FeuilleMaladie> create(@RequestBody FeuilleMaladie f) {
+    f.setId(null);
     return ResponseEntity.status(201).body(repo.save(f));
   }
 

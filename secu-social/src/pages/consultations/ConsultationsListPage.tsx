@@ -37,11 +37,12 @@ const ConsultationsListPage = () => {
   }, [dispatch]);
 
   const getAssureName = (id: string) => {
-    const a = assures.find((a) => a.id === id);
+    const a = assures.find((a) => String(a.id) === String(id));
     return a ? `${a.nom} ${a.prenom}` : id;
   };
 
-  const paginated = consultations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const sorted = [...consultations].sort((a, b) => b.date.localeCompare(a.date));
+  const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box>

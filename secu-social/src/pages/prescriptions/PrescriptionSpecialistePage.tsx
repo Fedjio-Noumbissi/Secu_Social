@@ -62,8 +62,11 @@ const PrescriptionSpecialistePage = () => {
       };
       await apiService.post('/prescriptionsSpecialistes', newPresc);
       setSuccess(true);
-    } catch (err) {
-      setSubmitError('Erreur lors de l\'enregistrement.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || (err as Error)?.message
+        || 'Erreur lors de l\'enregistrement. Vérifiez les champs et réessayez.';
+      setSubmitError(msg);
     }
   };
 

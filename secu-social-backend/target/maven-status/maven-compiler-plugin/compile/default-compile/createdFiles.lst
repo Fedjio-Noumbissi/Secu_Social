@@ -15,6 +15,7 @@ com/secusocial/config/CorsConfig$1.class
 com/secusocial/controller/PrescriptionSpecialisteController.class
 com/secusocial/controller/ConsultationController.class
 com/secusocial/model/User.class
+com/secusocial/config/GlobalExceptionHandler.class
 com/secusocial/model/Remboursement.class
 com/secusocial/repository/RemboursementRepository.class
 com/secusocial/controller/RemboursementController.class

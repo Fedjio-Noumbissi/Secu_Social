@@ -34,8 +34,8 @@ function writeDB(data) {
 
 const collections = [
   'users', 'assures', 'medecins', 'consultations',
-  'prescriptions_medicaments', 'prescriptions_specialistes',
-  'feuilles_maladie', 'remboursements',
+  'prescriptionsMedicaments', 'prescriptionsSpecialistes',
+  'feuillesMaladie', 'remboursements',
 ];
 
 function parseURL(url) {

@@ -23,6 +23,7 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<User> create(@RequestBody User user) {
+    user.setId(null);
     return ResponseEntity.status(201).body(repo.save(user));
   }
 

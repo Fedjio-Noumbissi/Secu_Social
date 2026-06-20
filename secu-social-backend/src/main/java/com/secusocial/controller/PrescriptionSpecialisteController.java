@@ -22,6 +22,7 @@ public class PrescriptionSpecialisteController {
 
   @PostMapping
   public ResponseEntity<PrescriptionSpecialiste> create(@RequestBody PrescriptionSpecialiste p) {
+    p.setId(null);
     return ResponseEntity.status(201).body(repo.save(p));
   }
 

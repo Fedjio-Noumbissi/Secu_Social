@@ -24,36 +24,43 @@ const landingTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Gabriola", "Garamond", "Papyrus", "Centray", serif',
+    fontFamily: '"Inter", sans-serif',
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
     h1: {
-      fontFamily: '"Gabriola", "Garamond", serif',
       fontWeight: 700,
+      letterSpacing: '-0.02em',
     },
     h2: {
-      fontFamily: '"Gabriola", "Garamond", serif',
-      fontWeight: 600,
+      fontWeight: 700,
+      letterSpacing: '-0.01em',
     },
     h3: {
-      fontFamily: '"Gabriola", "Garamond", serif',
       fontWeight: 600,
     },
     h4: {
-      fontFamily: '"Gabriola", "Garamond", serif',
       fontWeight: 600,
     },
     h5: {
-      fontFamily: '"Gabriola", "Garamond", serif',
-      fontWeight: 500,
+      fontWeight: 600,
     },
     h6: {
-      fontFamily: '"Gabriola", "Garamond", serif',
-      fontWeight: 500,
+      fontWeight: 600,
+    },
+    subtitle1: {
+      fontWeight: 400,
+      letterSpacing: '0.01em',
+    },
+    subtitle2: {
+      fontWeight: 300,
+      letterSpacing: '0.01em',
     },
     body1: {
-      fontFamily: '"Centray", "Garamond", serif',
+      fontWeight: 400,
     },
     body2: {
-      fontFamily: '"Centray", "Garamond", serif',
+      fontWeight: 400,
     },
   },
   shape: {

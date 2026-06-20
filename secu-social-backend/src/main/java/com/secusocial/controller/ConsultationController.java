@@ -22,6 +22,7 @@ public class ConsultationController {
 
   @PostMapping
   public ResponseEntity<Consultation> create(@RequestBody Consultation c) {
+    c.setId(null);
     return ResponseEntity.status(201).body(repo.save(c));
   }
 

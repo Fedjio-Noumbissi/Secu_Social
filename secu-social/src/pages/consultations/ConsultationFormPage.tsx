@@ -27,6 +27,7 @@ const ConsultationFormPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [submitError, setSubmitError] = useState('');
   const [assuresLoading, setAssuresLoading] = useState(true);
+  const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
 
   const initialValues = {
     id: '',
@@ -41,16 +42,20 @@ const ConsultationFormPage = () => {
   };
 
   useEffect(() => {
-    const fetchAssures = async () => {
+    const fetchData = async () => {
       try {
-        const data = await apiService.get<Assure[]>('/assures');
-        dispatch(setAssures(data));
+        const [aData, pData] = await Promise.all([
+          apiService.get<Assure[]>('/assures'),
+          apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
+        ]);
+        dispatch(setAssures(aData));
+        setMedicamentOptions([...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort());
       } catch (err) {
         console.error('Erreur chargement assurés', err);
       }
       setAssuresLoading(false);
     };
-    fetchAssures();
+    fetchData();
   }, [dispatch]);
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -90,8 +95,11 @@ const ConsultationFormPage = () => {
       }
 
       navigate('/consultations');
-    } catch (err) {
-      setSubmitError('Erreur lors de l\'enregistrement.');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || (err as Error)?.message
+        || 'Erreur lors de l\'enregistrement. Vérifiez les champs et réessayez.';
+      setSubmitError(msg);
     }
   };
 
@@ -197,9 +205,13 @@ const ConsultationFormPage = () => {
                     value={values.prescriptionMedicaments}
                     onChange={handleChange}
                     placeholder="Ex: Paracétamol 500mg - 1 comprimé 3x/jour pendant 5 jours"
-                    multiline
-                    rows={2}
+                    inputProps={{ list: 'medicaments-list' }}
                   />
+                  <datalist id="medicaments-list">
+                    {medicamentOptions.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                  </datalist>
                 </Grid>
               </Grid>
               <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: { xs: 'center', sm: 'flex-end' }, flexWrap: 'wrap' }}>

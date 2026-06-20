@@ -22,6 +22,7 @@ public class AssureController {
 
   @PostMapping
   public ResponseEntity<Assure> create(@RequestBody Assure a) {
+    a.setId(null);
     return ResponseEntity.status(201).body(repo.save(a));
   }
 

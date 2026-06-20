@@ -71,7 +71,7 @@ const RemboursementPage = () => {
 
   const getAssureFeuilles = () => {
     if (!selectedAssure) return [];
-    return feuilles.filter((f) => f.assureId === selectedAssure.id && f.validee);
+    return feuilles.filter((f) => String(f.assureId) === String(selectedAssure.id) && f.validee);
   };
 
   const handleCalculate = (feuille: FeuilleMaladie) => {
@@ -79,9 +79,9 @@ const RemboursementPage = () => {
     setIsCalculated(false);
 
     const consultationId = feuille.consultationId;
-    const consultation = consultations.find((c) => c.id === consultationId);
+      const consultation = consultations.find((c) => String(c.id) === String(consultationId));
     if (consultation) {
-      const medecin = medecins.find((m) => m.id === consultation.medecinId);
+      const medecin = medecins.find((m) => String(m.id) === String(consultation.medecinId));
       if (medecin) {
         const taux = medecin.specialite === 'generaliste' ? 100 : 80;
         const montantTotal = Math.floor(Math.random() * 15000) + 3000;
@@ -94,7 +94,7 @@ const RemboursementPage = () => {
   };
 
   const alreadyRemboursed = (feuilleId: string) => {
-    return remboursements.some((r) => r.feuilleMaladieId === feuilleId);
+    return remboursements.some((r) => String(r.feuilleMaladieId) === String(feuilleId));
   };
 
   const handleSave = async () => {
@@ -132,9 +132,9 @@ const RemboursementPage = () => {
   };
 
   const handlePrint = (remb: Remboursement) => {
-    const assure = assures.find((a) => a.id === remb.assureId);
-    const consultation = consultations.find((c) => c.id === remb.consultationId);
-    const medecin = consultation ? medecins.find((m) => m.id === consultation.medecinId) : undefined;
+    const assure = assures.find((a) => String(a.id) === String(remb.assureId));
+    const consultation = consultations.find((c) => String(c.id) === String(remb.consultationId));
+    const medecin = consultation ? medecins.find((m) => String(m.id) === String(consultation.medecinId)) : undefined;
     setPrintData({ remb, assure, medecin });
   };
 
