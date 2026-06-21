@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.PROD ? 'https://secu-social-backend.onrender.com' : 'http://localhost:8080';
+const BASE_URL = import.meta.env.PROD ? 'https://secu-social-backend.onrender.com' : '/';
 
 const api = axios.create({
   baseURL: BASE_URL,
