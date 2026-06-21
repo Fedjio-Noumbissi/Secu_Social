@@ -2,5 +2,5 @@ services:
   - type: web
     name: secu-social
     env: node
-    buildCommand: ""
-    startCommand: node server.js
+buildCommand: npm install && npm run build
+startCommand: node server.js
