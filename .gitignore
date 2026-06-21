@@ -1,15 +1,1 @@
-# Backend Java/Maven
-secu-social-backend/target/
-secu-social-backend/.mvn/
-*.class
-*.jar
-*.war
-
-# Frontend Node.js
-secu-social/node_modules/
-secu-social/dist/
-
-# Divers
-.env
-*.log
-.DS_Store
+target/
