@@ -160,7 +160,7 @@ const RemboursementPage = () => {
 
   return (
     <>
-      <Box>
+      <Box className={printData ? 'no-print' : ''}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
           Remboursements
         </Typography>

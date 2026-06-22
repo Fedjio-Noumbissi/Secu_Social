@@ -13,7 +13,7 @@ const DashboardFooter = () => {
     >
       <Container maxWidth={false} sx={{ px: 3 }}>
         <Typography variant="body2" sx={{ color: '#8B4513', textAlign: 'center', fontSize: '0.8rem' }}>
-          &copy; {new Date().getFullYear()} Secu Social – Sécurité sociale du Cameroun. Tous droits réservés.
+          &copy; {new Date().getFullYear()} Secu Sociale – Sécurité sociale du Cameroun. Tous droits réservés.
         </Typography>
       </Container>
     </Box>

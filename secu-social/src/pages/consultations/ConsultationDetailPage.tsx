@@ -32,23 +32,23 @@ const ConsultationDetailPage = () => {
           apiService.get<FeuilleMaladie[]>('/feuillesMaladie'),
         ]);
 
-        const consult = consultations.find((c) => c.id === id);
+        const consult = consultations.find((c) => String(c.id) === String(id));
         if (!consult) return;
         setConsultation(consult);
 
-        const a = assures.find((a) => a.id === consult.assureId);
+        const a = assures.find((a) => String(a.id) === String(consult.assureId));
         if (a) setAssure(a);
 
-        const m = medecins.find((m) => m.id === consult.medecinId);
+        const m = medecins.find((m) => String(m.id) === String(consult.medecinId));
         if (m) setMedecin(m);
 
         const filteredPrescs = prescs.filter((p) =>
-          consult.prescriptionMedicamentsIds?.includes(p.id)
+          consult.prescriptionMedicamentsIds?.map(String).includes(String(p.id))
         );
         setPrescriptions(filteredPrescs);
 
         const filteredFeuilles = feuillesData.filter(
-          (f) => f.consultationId === consult.id
+          (f) => String(f.consultationId) === String(consult.id)
         );
         setFeuilles(filteredFeuilles);
       } catch (err) {
@@ -93,7 +93,7 @@ const ConsultationDetailPage = () => {
       <Paper sx={{ p: { xs: 2, md: 4 }, mb: 3 }}>
         <Box className="print-header" sx={{ display: 'none', textAlign: 'center', mb: 3 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', letterSpacing: 2 }}>
-            SECU SOCIAL
+            SECU SOCIALE
           </Typography>
           <Typography variant="body1" sx={{ color: '#666' }}>
             Détail de la consultation médicale
@@ -167,7 +167,7 @@ const ConsultationDetailPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">N° Consultation</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>CONS-{consultation.id.padStart(4, '0')}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>CONS-{String(consultation.id).padStart(4, '0')}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12 }}>
                   <Typography variant="caption" color="text.secondary">Motif</Typography>

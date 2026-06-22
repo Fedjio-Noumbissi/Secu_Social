@@ -52,7 +52,7 @@ const AssureFormPage = () => {
         const assuresData = await apiService.get<Assure[]>('/assures');
         dispatch(setAssures(assuresData));
         if (id) {
-          const assure = assuresData.find((a) => a.id === id);
+          const assure = assuresData.find((a) => String(a.id) === String(id));
           if (assure) {
             setInitialValues(assure);
           }

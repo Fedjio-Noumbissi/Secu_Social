@@ -56,6 +56,7 @@ const printStyles = {
       border: 'none !important',
       WebkitPrintColorAdjust: 'exact',
       printColorAdjust: 'exact',
+      pageBreakInside: 'avoid',
     },
     /* KPI cards */
     '.MuiPaper-root .MuiTypography-h5, .MuiPaper-root .MuiTypography-h4, .MuiPaper-root .MuiTypography-h3': {
@@ -98,21 +99,16 @@ const printStyles = {
     /* When printing a receipt overlay */
     '.receipt-print-wrapper': {
       display: 'block !important',
-      position: 'fixed !important',
-      top: '0 !important',
-      left: '0 !important',
+      position: 'static !important', /* Better for printing to avoid cutoff */
       width: '100% !important',
-      minHeight: '100vh !important',
+      minHeight: 'auto !important',
       zIndex: '99999 !important',
       backgroundColor: '#fff !important',
-      padding: '40px !important',
+      padding: '0 !important', /* Reset padding for print */
       boxSizing: 'border-box !important',
       margin: '0 !important',
     },
-    /* Avoid page breaks inside cards */
-    '.MuiPaper-root': {
-      pageBreakInside: 'avoid',
-    },
+
     /* Print header/footer */
     '.no-print': {
       display: 'none !important',

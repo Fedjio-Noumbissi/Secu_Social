@@ -50,7 +50,7 @@ const MedecinFormPage = () => {
         const data = await apiService.get<Medecin[]>('/medecins');
         dispatch(setMedecins(data));
         if (id) {
-          const medecin = data.find((m) => m.id === id);
+          const medecin = data.find((m) => String(m.id) === String(id));
           if (medecin) setInitialValues(medecin);
         }
       } catch (err) {

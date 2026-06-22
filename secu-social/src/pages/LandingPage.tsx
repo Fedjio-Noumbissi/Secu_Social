@@ -55,7 +55,7 @@ const LandingPage = () => {
               border: '3px solid rgba(0,0,0,0.15)',
             }}
             role="img"
-            aria-label="Secu Social"
+            aria-label="Secu Sociale"
           >
             ⚕
           </Box>
@@ -69,7 +69,7 @@ const LandingPage = () => {
               textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
             }}
           >
-            Bienvenue sur Secu Social
+            Bienvenue sur Secu Sociale
           </Typography>
           <Typography
             variant="h6"

@@ -18,7 +18,7 @@ const PrintableReceipt = ({ remboursement, assure, medecin }: PrintableReceiptPr
     <Box className="print-receipt" sx={{ fontFamily: '"Centray", "Garamond", serif', p: 4 }}>
       <Box sx={{ textAlign: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', letterSpacing: 2 }}>
-          SECU SOCIAL
+          SECU SOCIALE
         </Typography>
         <Typography variant="body2" sx={{ color: '#666', fontStyle: 'italic' }}>
           Sécurité sociale du Cameroun
@@ -172,7 +172,7 @@ const PrintableReceipt = ({ remboursement, assure, medecin }: PrintableReceiptPr
       <Divider sx={{ mb: 2, borderColor: '#D2691E' }} />
       <Box sx={{ textAlign: 'center' }}>
         <Typography variant="caption" sx={{ color: '#999', fontStyle: 'italic', display: 'block' }}>
-          Document officiel – Remboursement des prestations maladie – Secu Social Cameroun
+          Document officiel – Remboursement des prestations maladie – Secu Sociale Cameroun
         </Typography>
         <Typography variant="caption" sx={{ color: '#999', fontStyle: 'italic', display: 'block' }}>
           Reçu n° {receiptId} – Généré le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')}

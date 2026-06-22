@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TablePagination, Chip,
+  TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import type { FeuilleMaladie, Assure } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
@@ -59,6 +59,7 @@ const FeuillesListPage = () => {
               <TableCell>Patient</TableCell>
               <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Détails</TableCell>
               <TableCell align="center">Validée</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -82,6 +83,13 @@ const FeuillesListPage = () => {
                       color={f.validee ? 'success' : 'warning'}
                       size="small"
                     />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="Voir détails">
+                      <IconButton color="primary" onClick={() => navigate(`/feuilles-maladie/${f.id}`)}>
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))

@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, Button, Avatar, IconButton, Tooltip } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Avatar, IconButton, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, logout } from '../../features/auth/authSlice';
@@ -40,12 +40,12 @@ const DashboardHeader = () => {
               color: '#fff',
             }}
             role="img"
-            aria-label="Secu Social"
+            aria-label="Secu Sociale"
           >
             SS
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#8B4513' }}>
-            Secu Social
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#8B4513', letterSpacing: 1 }}>
+            Secu Sociale
           </Typography>
         </Box>
 

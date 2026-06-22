@@ -84,7 +84,7 @@ const LoginPage = () => {
                 fontSize: 28,
               }}
               role="img"
-              aria-label="Secu Social"
+              aria-label="Secu Sociale"
             >
               SS
             </Box>
@@ -92,7 +92,7 @@ const LoginPage = () => {
               Connexion
             </Typography>
             <Typography variant="body2" sx={{ color: '#5D4037', mt: 0.5 }}>
-              Secu Social – Sécurité sociale du Cameroun
+              Secu Sociale – Sécurité sociale du Cameroun
             </Typography>
           </Box>
 
@@ -185,10 +185,10 @@ const LoginPage = () => {
             <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
               Comptes de démonstration :
             </Typography>
-            <Typography variant="caption" display="block">
+            <Typography variant="caption" sx={{ display: 'block' }}>
               Assureur : assureur@secu-social.cm / admin123
             </Typography>
-            <Typography variant="caption" display="block">
+            <Typography variant="caption" sx={{ display: 'block' }}>
               Médecin : medecin@secu-social.cm / medecin123
             </Typography>
           </Box>

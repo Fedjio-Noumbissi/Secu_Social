@@ -15,7 +15,7 @@ const LandingFooter = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 3 }}>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-              Secu Social
+              Secu Sociale
             </Typography>
             <Typography variant="body2" sx={{ color: '#D4A574', maxWidth: 300 }}>
               Sécurité sociale au Cameroun – Protéger et prendre soin de chaque citoyen.
@@ -38,7 +38,7 @@ const LandingFooter = () => {
         </Box>
         <Box sx={{ borderTop: '1px solid rgba(255, 215, 0, 0.2)', mt: 3, pt: 2, textAlign: 'center' }}>
           <Typography variant="body2" sx={{ color: '#D4A574' }}>
-            &copy; {new Date().getFullYear()} Secu Social. Tous droits réservés.
+            &copy; {new Date().getFullYear()} Secu Sociale. Tous droits réservés.
           </Typography>
         </Box>
       </Container>

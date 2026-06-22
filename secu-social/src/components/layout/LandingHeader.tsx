@@ -28,15 +28,15 @@ const LandingHeader = () => {
                 border: '2px solid rgba(0,0,0,0.2)',
               }}
               role="img"
-              aria-label="Secu Social"
+              aria-label="Secu Sociale"
             >
-              ⚕
+              SS
             </Box>
             <Typography
               variant="h5"
-              sx={{ fontWeight: 700, letterSpacing: 1 }}
+              sx={{ fontWeight: 800, color: '#FFF', letterSpacing: 1, display: { xs: 'none', sm: 'block' } }}
             >
-              Secu Social
+              Secu Sociale
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 2 }}>

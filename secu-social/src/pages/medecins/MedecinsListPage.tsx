@@ -5,13 +5,14 @@ import {
   Box, Typography, Button, TextField, InputAdornment, IconButton,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Chip, Tooltip, TablePagination, Dialog, DialogTitle,
-  DialogContent, DialogContentText, DialogActions,
+  DialogContent, DialogContentText, DialogActions, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import { setMedecins, removeMedecin } from '../../features/medecins/medecinsSlice';
@@ -23,6 +24,7 @@ const MedecinsListPage = () => {
   const dispatch = useDispatch();
   const medecins = useSelector((state: RootState) => state.medecins.medecins);
   const [search, setSearch] = useState('');
+  const [filterSpecialite, setFilterSpecialite] = useState<string>('toutes');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
@@ -41,13 +43,15 @@ const MedecinsListPage = () => {
 
   const filteredMedecins = medecins.filter((m) => {
     const q = search.toLowerCase();
-    return (
+    const matchesSearch = (
       m.nom.toLowerCase().includes(q) ||
       m.prenom.toLowerCase().includes(q) ||
       m.matricule.toLowerCase().includes(q) ||
       m.specialite.toLowerCase().includes(q) ||
       m.email.toLowerCase().includes(q)
     );
+    const matchesSpecialite = filterSpecialite === 'toutes' || m.specialite === filterSpecialite;
+    return matchesSearch && matchesSpecialite;
   });
 
   const paginatedMedecins = filteredMedecins.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -78,9 +82,9 @@ const MedecinsListPage = () => {
         </Button>
       </Box>
 
-      <Paper sx={{ p: 2, mb: 3 }}>
+      <Paper sx={{ p: 2, mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <TextField
-          fullWidth
+          sx={{ flex: 1, minWidth: 200 }}
           variant="outlined"
           placeholder="Rechercher par nom, prénom, matricule ou spécialité..."
           value={search}
@@ -96,6 +100,19 @@ const MedecinsListPage = () => {
           }}
           size="small"
         />
+        <FormControl size="small" sx={{ minWidth: 200 }}>
+          <InputLabel id="filter-specialite-label">Spécialité</InputLabel>
+          <Select
+            labelId="filter-specialite-label"
+            value={filterSpecialite}
+            label="Spécialité"
+            onChange={(e) => setFilterSpecialite(e.target.value)}
+          >
+            <MenuItem value="toutes">Toutes</MenuItem>
+            <MenuItem value="generaliste">Généraliste</MenuItem>
+            <MenuItem value="specialiste">Spécialiste</MenuItem>
+          </Select>
+        </FormControl>
       </Paper>
 
       <TableContainer component={Paper}>
@@ -143,6 +160,15 @@ const MedecinsListPage = () => {
                     )}
                   </TableCell>
                   <TableCell align="center">
+                    <Tooltip title="Voir détails">
+                      <IconButton
+                        size="small"
+                        onClick={() => navigate(`/medecins/${medecin.id}`)}
+                        color="primary"
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Modifier">
                       <IconButton
                         size="small"

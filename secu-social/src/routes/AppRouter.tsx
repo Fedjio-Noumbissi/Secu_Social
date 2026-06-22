@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectUserRole, selectIsAuthenticated } from '../features/auth/authSlice';
-import type { Role } from '../types';
 import AuthGuard from '../components/guards/AuthGuard';
 import RoleGuard from '../components/guards/RoleGuard';
 import LandingLayout from '../layouts/LandingLayout';
@@ -11,14 +10,17 @@ import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import AssuresListPage from '../pages/assures/AssuresListPage';
 import AssureFormPage from '../pages/assures/AssureFormPage';
+import AssureDetailPage from '../pages/assures/AssureDetailPage';
 import MedecinsListPage from '../pages/medecins/MedecinsListPage';
 import MedecinFormPage from '../pages/medecins/MedecinFormPage';
+import MedecinDetailPage from '../pages/medecins/MedecinDetailPage';
 import AttributionPage from '../pages/AttributionPage';
 import ConsultationsListPage from '../pages/consultations/ConsultationsListPage';
 import ConsultationFormPage from '../pages/consultations/ConsultationFormPage';
 import ConsultationDetailPage from '../pages/consultations/ConsultationDetailPage';
 import FeuillesListPage from '../pages/feuilles/FeuillesListPage';
 import FeuilleFormPage from '../pages/feuilles/FeuilleFormPage';
+import FeuilleDetailPage from '../pages/feuilles/FeuilleDetailPage';
 import PrescriptionMedicamentPage from '../pages/prescriptions/PrescriptionMedicamentPage';
 import PrescriptionSpecialistePage from '../pages/prescriptions/PrescriptionSpecialistePage';
 import RemboursementPage from '../pages/remboursements/RemboursementPage';
@@ -59,10 +61,12 @@ const AppRouter = () => {
         <Route path="/assures" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><AssuresListPage /></DashboardLayout></RoleGuard>} />
         <Route path="/assures/new" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><AssureFormPage /></DashboardLayout></RoleGuard>} />
         <Route path="/assures/:id/edit" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><AssureFormPage /></DashboardLayout></RoleGuard>} />
+        <Route path="/assures/:id" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><AssureDetailPage /></DashboardLayout></RoleGuard>} />
 
         <Route path="/medecins" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><MedecinsListPage /></DashboardLayout></RoleGuard>} />
         <Route path="/medecins/new" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><MedecinFormPage /></DashboardLayout></RoleGuard>} />
         <Route path="/medecins/:id/edit" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><MedecinFormPage /></DashboardLayout></RoleGuard>} />
+        <Route path="/medecins/:id" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><MedecinDetailPage /></DashboardLayout></RoleGuard>} />
 
         <Route path="/attribution" element={<RoleGuard allowedRoles={['assureur']}><DashboardLayout><AttributionPage /></DashboardLayout></RoleGuard>} />
 
@@ -72,6 +76,7 @@ const AppRouter = () => {
 
         <Route path="/feuilles-maladie" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><FeuillesListPage /></DashboardLayout></RoleGuard>} />
         <Route path="/feuilles-maladie/new" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><FeuilleFormPage /></DashboardLayout></RoleGuard>} />
+        <Route path="/feuilles-maladie/:id" element={<RoleGuard allowedRoles={['medecin', 'assureur']}><DashboardLayout><FeuilleDetailPage /></DashboardLayout></RoleGuard>} />
 
         <Route path="/prescriptions/medicaments" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><PrescriptionMedicamentPage /></DashboardLayout></RoleGuard>} />
         <Route path="/prescriptions/specialiste" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><PrescriptionSpecialistePage /></DashboardLayout></RoleGuard>} />

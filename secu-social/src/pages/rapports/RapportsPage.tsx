@@ -20,19 +20,14 @@ const COLORS = ['#8B4513', '#A0522D', '#D2691E', '#C62828', '#2E7D32', '#1565C0'
 
 const RapportsPage = () => {
   const [remboursements, setRemboursements] = useState<Remboursement[]>([]);
-  const [assures, setAssures] = useState<Assure[]>([]);
   const [period, setPeriod] = useState<'mois' | 'trimestre' | 'annee'>('mois');
   const [filteredData, setFilteredData] = useState<Remboursement[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [rData, aData] = await Promise.all([
-          apiService.get<Remboursement[]>('/remboursements'),
-          apiService.get<Assure[]>('/assures'),
-        ]);
+        const rData = await apiService.get<Remboursement[]>('/remboursements');
         setRemboursements(rData);
-        setAssures(aData);
       } catch (err) {
         console.error('Erreur chargement', err);
       }
@@ -150,7 +145,7 @@ const RapportsPage = () => {
       {/* Print header – visible only during print */}
       <Box className="print-header" sx={{ display: 'none', textAlign: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', letterSpacing: 2 }}>
-          SECU SOCIAL
+          SECU SOCIALE
         </Typography>
         <Typography variant="body1" sx={{ color: '#666' }}>
           Rapport des remboursements – Période : {

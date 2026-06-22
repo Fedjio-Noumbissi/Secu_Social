@@ -12,12 +12,12 @@ import {
   Search as SearchIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import { setAssures, removeAssure } from '../../features/assures/assuresSlice';
 import type { Assure, Medecin } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
-import { formatCurrency } from '../../utils/formatCurrency';
 import MaskedSSN from '../../components/common/MaskedSSN';
 import type { RootState } from '../../store';
 
@@ -71,7 +71,7 @@ const AssuresListPage = () => {
 
   const getMedecinName = (medecinId?: string) => {
     if (!medecinId) return null;
-    const med = medecins.find((m) => m.id === medecinId);
+    const med = medecins.find((m) => String(m.id) === String(medecinId));
     return med ? `${med.prenom} ${med.nom}` : null;
   };
 
@@ -162,6 +162,15 @@ const AssuresListPage = () => {
                       )}
                     </TableCell>
                     <TableCell align="center">
+                      <Tooltip title="Voir détails">
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/assures/${assure.id}`)}
+                          color="primary"
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
                       <Tooltip title="Modifier">
                         <IconButton
                           size="small"
