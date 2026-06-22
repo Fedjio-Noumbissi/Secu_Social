@@ -29,9 +29,25 @@ public class AuthController {
     }
 
     User user = optUser.get();
-    if (!user.getPassword().equals(password)) {
-      return ResponseEntity.status(401).body(Map.of("error", "Email ou mot de passe incorrect"));
+
+    if (user.isAccountLocked()) {
+      return ResponseEntity.status(403).body(Map.of("error", "Votre compte est bloqué suite à 3 tentatives infructueuses. Veuillez contacter l'administrateur."));
     }
+
+    if (!user.getPassword().equals(password)) {
+      user.setFailedAttempts(user.getFailedAttempts() + 1);
+      if (user.getFailedAttempts() >= 3) {
+        user.setAccountLocked(true);
+        userRepo.save(user);
+        return ResponseEntity.status(403).body(Map.of("error", "Votre compte est bloqué suite à 3 tentatives infructueuses. Veuillez contacter l'administrateur."));
+      }
+      userRepo.save(user);
+      return ResponseEntity.status(401).body(Map.of("error", "Email ou mot de passe incorrect. Tentatives restantes : " + (3 - user.getFailedAttempts())));
+    }
+
+    // Login success, reset attempts
+    user.setFailedAttempts(0);
+    userRepo.save(user);
 
     String token = UUID.randomUUID().toString();
     String nom = "";
