@@ -181,7 +181,7 @@ const LoginPage = () => {
             </Link>
           </Box>
 
-          <Box sx={{ mt: 3, p: 2, bgcolor: '#FFF8E1', borderRadius: 2, fontSize: '0.8rem', color: '#5D4037' }}>
+          {/* <Box sx={{ mt: 3, p: 2, bgcolor: '#FFF8E1', borderRadius: 2, fontSize: '0.8rem', color: '#5D4037' }}>
             <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
               Comptes de démonstration :
             </Typography>
@@ -191,7 +191,7 @@ const LoginPage = () => {
             <Typography variant="caption" sx={{ display: 'block' }}>
               Médecin : medecin@secu-social.cm / medecin123
             </Typography>
-          </Box>
+          </Box> */}
         </Paper>
       </Container>
     </Box>
