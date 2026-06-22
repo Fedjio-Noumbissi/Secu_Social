@@ -22,10 +22,10 @@ public class User {
   private String profilId;
 
   @Column(name = "failed_attempts")
-  private int failedAttempts = 0;
+  private Integer failedAttempts = 0;
 
   @Column(name = "account_locked")
-  private boolean accountLocked = false;
+  private Boolean accountLocked = false;
 
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
@@ -37,8 +37,8 @@ public class User {
   public void setRole(String role) { this.role = role; }
   public String getProfilId() { return profilId; }
   public void setProfilId(String profilId) { this.profilId = profilId; }
-  public int getFailedAttempts() { return failedAttempts; }
-  public void setFailedAttempts(int failedAttempts) { this.failedAttempts = failedAttempts; }
-  public boolean isAccountLocked() { return accountLocked; }
-  public void setAccountLocked(boolean accountLocked) { this.accountLocked = accountLocked; }
+  public int getFailedAttempts() { return failedAttempts != null ? failedAttempts : 0; }
+  public void setFailedAttempts(Integer failedAttempts) { this.failedAttempts = failedAttempts; }
+  public boolean isAccountLocked() { return accountLocked != null ? accountLocked : false; }
+  public void setAccountLocked(Boolean accountLocked) { this.accountLocked = accountLocked; }
 }
