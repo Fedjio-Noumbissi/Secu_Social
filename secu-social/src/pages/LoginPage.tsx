@@ -40,7 +40,7 @@ const LoginPage = () => {
       dispatch(loginSuccess({ ...response.user, nom: response.user.nom || '', prenom: response.user.prenom || '' }));
       navigate('/dashboard');
     } catch (err: any) {
-      const msg = err?.response?.data?.error || 'Erreur de connexion au serveur.';
+      const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Erreur de connexion au serveur.';
       setError(msg);
       dispatch(loginFailure(msg));
     } finally {
