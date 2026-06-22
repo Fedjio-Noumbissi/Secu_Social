@@ -42,6 +42,8 @@ public class UserController {
       if (updates.containsKey("password")) existing.setPassword((String) updates.get("password"));
       if (updates.containsKey("role")) existing.setRole((String) updates.get("role"));
       if (updates.containsKey("profilId")) existing.setProfilId((String) updates.get("profilId"));
+      if (updates.containsKey("accountLocked")) existing.setAccountLocked((Boolean) updates.get("accountLocked"));
+      if (updates.containsKey("failedAttempts")) existing.setFailedAttempts((Integer) updates.get("failedAttempts"));
       return ResponseEntity.ok(repo.save(existing));
     }).orElse(ResponseEntity.notFound().build());
   }

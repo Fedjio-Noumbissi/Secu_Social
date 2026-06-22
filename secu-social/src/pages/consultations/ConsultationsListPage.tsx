@@ -11,10 +11,12 @@ import { setConsultations } from '../../features/consultations/consultationsSlic
 import type { Consultation, Assure } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
 import type { RootState } from '../../store';
+import { selectUser } from '../../features/auth/authSlice';
 
 const ConsultationsListPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const consultations = useSelector((state: RootState) => state.consultations.consultations);
   const [assures, setAssures] = useState<Assure[]>([]);
   const [page, setPage] = useState(0);
@@ -41,7 +43,14 @@ const ConsultationsListPage = () => {
     return a ? `${a.nom} ${a.prenom}` : id;
   };
 
-  const sorted = [...consultations].sort((a, b) => b.date.localeCompare(a.date));
+  const filteredConsultations = consultations.filter((c) => {
+    if (user?.role === 'medecin' && c.medecinId !== user.profilId) {
+      return false;
+    }
+    return true;
+  });
+
+  const sorted = [...filteredConsultations].sort((a, b) => b.date.localeCompare(a.date));
   const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -96,7 +105,7 @@ const ConsultationsListPage = () => {
         </Table>
         <TablePagination
           component="div"
-          count={consultations.length}
+          count={filteredConsultations.length}
           page={page}
           onPageChange={(_, p) => setPage(p)}
           rowsPerPage={rowsPerPage}

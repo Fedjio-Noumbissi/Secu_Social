@@ -47,21 +47,26 @@ const DashboardPage = () => {
           apiService.get<Remboursement[]>('/remboursements'),
           apiService.get<Consultation[]>('/consultations'),
         ]);
-        setAssures(assuresData);
+
+        const isMedecin = user?.role === 'medecin';
+        const filteredAssures = isMedecin ? assuresData.filter(a => a.medecinTraitantId === user?.profilId) : assuresData;
+        const filteredConsultations = isMedecin ? consultData.filter(c => c.medecinId === user?.profilId) : consultData;
+
+        setAssures(filteredAssures);
         setMedecins(medecinsData);
-        setConsultations(consultData);
+        setConsultations(filteredConsultations);
         setRecentRemboursements(rembData.slice(-3).reverse());
         setRemboursements(rembData);
 
         const totalRemb = rembData.reduce((sum, r) => sum + r.montantRembourse, 0);
         const now = new Date();
-        const monthConsultations = consultData.filter((c) => {
+        const monthConsultations = filteredConsultations.filter((c) => {
           const d = new Date(c.date);
           return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         });
 
         setStats({
-          nbAssures: assuresData.length,
+          nbAssures: filteredAssures.length,
           nbMedecins: medecinsData.length,
           totalRembourse: totalRemb,
           remboursementsEnAttente: rembData.filter((r) => {
@@ -75,7 +80,7 @@ const DashboardPage = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [user?.role, user?.profilId]);
 
   const role = user?.role;
   const visibleTabs = useMemo(

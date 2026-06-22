@@ -9,6 +9,8 @@ export interface User {
   password: string;
   role: Role;
   profilId?: string;
+  accountLocked?: boolean;
+  failedAttempts?: number;
 }
 
 export interface Assure {

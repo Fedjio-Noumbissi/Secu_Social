@@ -20,10 +20,12 @@ import type { Assure, Medecin } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
 import MaskedSSN from '../../components/common/MaskedSSN';
 import type { RootState } from '../../store';
+import { selectUser } from '../../features/auth/authSlice';
 
 const AssuresListPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
   const assures = useSelector((state: RootState) => state.assures.assures);
   const [medecins, setMedecins] = useState<Medecin[]>([]);
   const [search, setSearch] = useState('');
@@ -48,6 +50,9 @@ const AssuresListPage = () => {
   }, [dispatch]);
 
   const filteredAssures = assures.filter((a) => {
+    if (user?.role === 'medecin' && a.medecinTraitantId !== user.profilId) {
+      return false;
+    }
     const q = search.toLowerCase();
     return (
       a.nom.toLowerCase().includes(q) ||

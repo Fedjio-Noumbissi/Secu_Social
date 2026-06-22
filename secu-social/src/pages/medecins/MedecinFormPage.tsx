@@ -6,13 +6,16 @@ import * as Yup from 'yup';
 import {
   Box, Typography, Paper, TextField, Button, Grid, MenuItem,
   FormControlLabel, Checkbox, Alert, CircularProgress,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material';
 import { apiService } from '../../services/api';
 import { addMedecin, updateMedecin, setMedecins } from '../../features/medecins/medecinsSlice';
 import type { Medecin } from '../../types';
 
 const validationSchema = Yup.object({
-  matricule: Yup.string().required('Le matricule est requis'),
+  matricule: Yup.string()
+    .required('Le matricule est requis')
+    .matches(/^MED-\d{3}$/, 'Le matricule doit être au format MED-XXX (ex: MED-001)'),
   nom: Yup.string().required('Le nom est requis'),
   prenom: Yup.string().required('Le prénom est requis'),
   specialite: Yup.string()
@@ -43,6 +46,7 @@ const MedecinFormPage = () => {
   });
   const [loading, setLoading] = useState(isEditing);
   const [submitError, setSubmitError] = useState('');
+  const [generatedPasswordDialog, setGeneratedPasswordDialog] = useState<{ email: string, password: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,18 +71,33 @@ const MedecinFormPage = () => {
       if (isEditing) {
         await apiService.put('/medecins', id!, values);
         dispatch(updateMedecin(values));
+        navigate('/medecins');
       } else {
         const { id: _, ...body } = values;
         const created = await apiService.post<Medecin>('/medecins', body);
         dispatch(addMedecin(created));
+
+        const password = '00000';
+        await apiService.post('/users', {
+          email: created.email,
+          password: password,
+          role: 'medecin',
+          profilId: String(created.id)
+        });
+
+        setGeneratedPasswordDialog({ email: created.email, password });
       }
-      navigate('/medecins');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
         || (err as Error)?.message
         || 'Erreur lors de l\'enregistrement. Vérifiez les champs et réessayez.';
       setSubmitError(msg);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setGeneratedPasswordDialog(null);
+    navigate('/medecins');
   };
 
   if (loading) {
@@ -227,6 +246,23 @@ const MedecinFormPage = () => {
           )}
         </Formik>
       </Paper>
+
+      <Dialog open={!!generatedPasswordDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Compte médecin créé avec succès</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Un compte utilisateur a été généré pour ce médecin. Veuillez lui communiquer ces informations pour qu'il puisse se connecter :
+            <br /><br />
+            <strong>Email :</strong> {generatedPasswordDialog?.email}<br />
+            <strong>Mot de passe :</strong> {generatedPasswordDialog?.password}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+            J'ai noté le mot de passe
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

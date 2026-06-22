@@ -2,19 +2,24 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip
+  TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../features/auth/authSlice';
 import { apiService } from '../../services/api';
 import type { FeuilleMaladie, Assure } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
 
 const FeuillesListPage = () => {
   const navigate = useNavigate();
+  const user = useSelector(selectUser);
   const [feuilles, setFeuilles] = useState<FeuilleMaladie[]>([]);
   const [assures, setAssures] = useState<Assure[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +42,24 @@ const FeuillesListPage = () => {
     return a ? `${a.nom} ${a.prenom}` : id;
   };
 
-  const sorted = [...feuilles].sort((a, b) => b.date.localeCompare(a.date));
+  const handleDelete = async (id: string) => {
+    try {
+      await apiService.delete('/feuillesMaladie', id);
+      setFeuilles((prev) => prev.filter((f) => f.id !== id));
+    } catch (err) {
+      console.error('Erreur suppression', err);
+    }
+    setDeleteDialog(null);
+  };
+
+  const filteredFeuilles = feuilles.filter((f) => {
+    if (user?.role === 'medecin') {
+      return f.medecinId === user.profilId;
+    }
+    return true;
+  });
+
+  const sorted = [...filteredFeuilles].sort((a, b) => b.date.localeCompare(a.date));
   const paginated = sorted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -90,6 +112,11 @@ const FeuillesListPage = () => {
                         <VisibilityIcon />
                       </IconButton>
                     </Tooltip>
+                    <Tooltip title="Supprimer">
+                      <IconButton color="error" onClick={() => setDeleteDialog(f.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))
@@ -98,7 +125,7 @@ const FeuillesListPage = () => {
         </Table>
         <TablePagination
           component="div"
-          count={feuilles.length}
+          count={filteredFeuilles.length}
           page={page}
           onPageChange={(_, p) => setPage(p)}
           rowsPerPage={rowsPerPage}
@@ -109,6 +136,23 @@ const FeuillesListPage = () => {
           labelRowsPerPage="Lignes par page"
         />
       </TableContainer>
+
+      <Dialog open={!!deleteDialog} onClose={() => setDeleteDialog(null)}>
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer cette feuille de maladie ? Cette action est irréversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialog(null)} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={() => deleteDialog && handleDelete(deleteDialog)} color="error" variant="contained">
+            Supprimer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
