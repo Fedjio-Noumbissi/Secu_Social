@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
-  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
+  Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/auth/authSlice';
 import { apiService } from '../../services/api';
@@ -20,6 +21,18 @@ const FeuillesListPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeFeuilleId, setActiveFeuilleId] = useState<string | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, id: string) => {
+    setAnchorEl(event.currentTarget);
+    setActiveFeuilleId(id);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setActiveFeuilleId(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,16 +120,9 @@ const FeuillesListPage = () => {
                     />
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title="Voir détails">
-                      <IconButton color="primary" onClick={() => navigate(`/feuilles-maladie/${f.id}`)}>
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Supprimer">
-                      <IconButton color="error" onClick={() => setDeleteDialog(f.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <IconButton size="small" onClick={(e) => handleOpenMenu(e, f.id)}>
+                      <MoreVertIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))
@@ -136,6 +142,21 @@ const FeuillesListPage = () => {
           labelRowsPerPage="Lignes par page"
         />
       </TableContainer>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={() => { navigate(`/feuilles-maladie/${activeFeuilleId}`); handleCloseMenu(); }}>
+          <ListItemIcon><VisibilityIcon fontSize="small" color="primary" /></ListItemIcon>
+          <ListItemText>Voir détails</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { activeFeuilleId && setDeleteDialog(activeFeuilleId); handleCloseMenu(); }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>Supprimer</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <Dialog open={!!deleteDialog} onClose={() => setDeleteDialog(null)}>
         <DialogTitle>Confirmer la suppression</DialogTitle>

@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
+  Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
-import { Add as AddIcon, Visibility as ViewIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as ViewIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import { setConsultations } from '../../features/consultations/consultationsSlice';
 import type { Consultation, Assure } from '../../types';
@@ -21,6 +22,18 @@ const ConsultationsListPage = () => {
   const [assures, setAssures] = useState<Assure[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeConsultationId, setActiveConsultationId] = useState<string | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, consultationId: string) => {
+    setAnchorEl(event.currentTarget);
+    setActiveConsultationId(consultationId);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setActiveConsultationId(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,11 +105,9 @@ const ConsultationsListPage = () => {
                     {c.observations}
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title="Voir détails">
-                      <IconButton size="small" onClick={() => navigate(`/consultations/${c.id}`)}>
-                        <ViewIcon />
-                      </IconButton>
-                    </Tooltip>
+                    <IconButton size="small" onClick={(e) => handleOpenMenu(e, c.id)}>
+                      <MoreVertIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))
@@ -116,6 +127,17 @@ const ConsultationsListPage = () => {
           labelRowsPerPage="Lignes par page"
         />
       </TableContainer>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={() => { navigate(`/consultations/${activeConsultationId}`); handleCloseMenu(); }}>
+          <ListItemIcon><ViewIcon fontSize="small" color="primary" /></ListItemIcon>
+          <ListItemText>Voir détails</ListItemText>
+        </MenuItem>
+      </Menu>
     </Box>
   );
 };

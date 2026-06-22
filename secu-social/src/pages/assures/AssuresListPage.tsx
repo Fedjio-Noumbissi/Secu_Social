@@ -6,6 +6,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Chip, Tooltip, TablePagination, Dialog, DialogTitle,
   DialogContent, DialogContentText, DialogActions,
+  Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -13,6 +14,7 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
+  MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import { setAssures, removeAssure } from '../../features/assures/assuresSlice';
@@ -32,6 +34,18 @@ const AssuresListPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeAssureId, setActiveAssureId] = useState<string | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, assureId: string) => {
+    setAnchorEl(event.currentTarget);
+    setActiveAssureId(assureId);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setActiveAssureId(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,33 +181,9 @@ const AssuresListPage = () => {
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      <Tooltip title="Voir détails">
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/assures/${assure.id}`)}
-                          color="primary"
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Modifier">
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/assures/${assure.id}/edit`)}
-                          sx={{ color: '#8B4513' }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Supprimer">
-                        <IconButton
-                          size="small"
-                          onClick={() => setDeleteDialog(assure.id)}
-                          sx={{ color: '#C62828' }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <IconButton size="small" onClick={(e) => handleOpenMenu(e, assure.id)}>
+                        <MoreVertIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 );
@@ -214,6 +204,25 @@ const AssuresListPage = () => {
           labelRowsPerPage="Lignes par page"
         />
       </TableContainer>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={() => { navigate(`/assures/${activeAssureId}`); handleCloseMenu(); }}>
+          <ListItemIcon><VisibilityIcon fontSize="small" color="primary" /></ListItemIcon>
+          <ListItemText>Voir détails</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { navigate(`/assures/${activeAssureId}/edit`); handleCloseMenu(); }}>
+          <ListItemIcon><EditIcon fontSize="small" sx={{ color: '#8B4513' }} /></ListItemIcon>
+          <ListItemText>Modifier</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { activeAssureId && setDeleteDialog(activeAssureId); handleCloseMenu(); }}>
+          <ListItemIcon><DeleteIcon fontSize="small" sx={{ color: '#C62828' }} /></ListItemIcon>
+          <ListItemText>Supprimer</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <Dialog open={!!deleteDialog} onClose={() => setDeleteDialog(null)}>
         <DialogTitle>Confirmer la suppression</DialogTitle>
