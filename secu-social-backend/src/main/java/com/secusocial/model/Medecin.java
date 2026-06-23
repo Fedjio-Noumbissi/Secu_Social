@@ -36,6 +36,9 @@ public class Medecin {
   @Column(name = "est_aussi_assure")
   private boolean estAussiAssure;
 
+  @Column(name = "assure_id")
+  private String assureId;
+
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
   public String getUserId() { return userId; }
@@ -56,4 +59,6 @@ public class Medecin {
   public void setAdresse(String adresse) { this.adresse = adresse; }
   public boolean isEstAussiAssure() { return estAussiAssure; }
   public void setEstAussiAssure(boolean estAussiAssure) { this.estAussiAssure = estAussiAssure; }
+  public String getAssureId() { return assureId; }
+  public void setAssureId(String assureId) { this.assureId = assureId; }
 }

@@ -45,6 +45,10 @@ public class MedecinController {
       if (u.containsKey("telephone")) existing.setTelephone((String) u.get("telephone"));
       if (u.containsKey("adresse")) existing.setAdresse((String) u.get("adresse"));
       if (u.containsKey("estAussiAssure")) existing.setEstAussiAssure((Boolean) u.get("estAussiAssure"));
+      if (u.containsKey("assureId")) {
+        Object val = u.get("assureId");
+        existing.setAssureId(val != null ? String.valueOf(val) : null);
+      }
       return ResponseEntity.ok(repo.save(existing));
     }).orElse(ResponseEntity.notFound().build());
   }
