@@ -29,13 +29,17 @@ const medecinsSlice = createSlice({
       state.medecins.push(action.payload);
     },
     updateMedecin(state, action: PayloadAction<Medecin>) {
-      const index = state.medecins.findIndex((m) => m.id === action.payload.id);
+      const index = state.medecins.findIndex(
+        (m) => String(m.id) === String(action.payload.id)
+      );
       if (index !== -1) {
         state.medecins[index] = action.payload;
       }
     },
     removeMedecin(state, action: PayloadAction<string>) {
-      state.medecins = state.medecins.filter((m) => m.id !== action.payload);
+      state.medecins = state.medecins.filter(
+        (m) => String(m.id) !== String(action.payload)
+      );
     },
     selectMedecin(state, action: PayloadAction<Medecin | null>) {
       state.selectedMedecin = action.payload;

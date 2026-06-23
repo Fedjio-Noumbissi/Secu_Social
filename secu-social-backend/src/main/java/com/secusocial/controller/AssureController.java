@@ -44,7 +44,11 @@ public class AssureController {
       if (u.containsKey("adresse")) existing.setAdresse((String) u.get("adresse"));
       if (u.containsKey("telephone")) existing.setTelephone((String) u.get("telephone"));
       if (u.containsKey("email")) existing.setEmail((String) u.get("email"));
-      if (u.containsKey("medecinTraitantId")) existing.setMedecinTraitantId((String) u.get("medecinTraitantId"));
+      if (u.containsKey("rib")) existing.setRib(u.get("rib") != null ? (String) u.get("rib") : null);
+      if (u.containsKey("medecinTraitantId")) {
+        Object val = u.get("medecinTraitantId");
+        existing.setMedecinTraitantId(val != null ? String.valueOf(val) : null);
+      }
       return ResponseEntity.ok(repo.save(existing));
     }).orElse(ResponseEntity.notFound().build());
   }

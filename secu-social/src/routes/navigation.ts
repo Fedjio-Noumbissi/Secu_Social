@@ -1,4 +1,3 @@
-import { createContext, useContext, ReactNode } from 'react';
 import type { Role } from '../types';
 
 interface NavigationItem {
@@ -15,7 +14,6 @@ const navigationItems: NavigationItem[] = [
   { label: 'Attribution MT', path: '/attribution', icon: 'assignment_ind', roles: ['assureur'] },
   { label: 'Consultations', path: '/consultations', icon: 'event_note', roles: ['medecin'] },
   { label: 'Feuilles de maladie', path: '/feuilles-maladie', icon: 'description', roles: ['medecin'] },
-  { label: 'Prescriptions', path: '/prescriptions/medicaments', icon: 'medication', roles: ['medecin'] },
   { label: 'Remboursements', path: '/remboursements', icon: 'payments', roles: ['assureur'] },
   { label: 'Rapports', path: '/rapports', icon: 'bar_chart', roles: ['assureur'] },
 ];

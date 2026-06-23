@@ -6,7 +6,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
   Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
-import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as VisibilityIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/auth/authSlice';
 import { apiService } from '../../services/api';
@@ -151,6 +151,10 @@ const FeuillesListPage = () => {
         <MenuItem onClick={() => { navigate(`/feuilles-maladie/${activeFeuilleId}`); handleCloseMenu(); }}>
           <ListItemIcon><VisibilityIcon fontSize="small" color="primary" /></ListItemIcon>
           <ListItemText>Voir détails</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { navigate(`/feuilles-maladie/${activeFeuilleId}/edit`); handleCloseMenu(); }}>
+          <ListItemIcon><EditIcon fontSize="small" color="info" /></ListItemIcon>
+          <ListItemText>Modifier</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => { activeFeuilleId && setDeleteDialog(activeFeuilleId); handleCloseMenu(); }}>
           <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>

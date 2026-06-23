@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -8,10 +8,10 @@ import {
   Alert, CircularProgress,
 } from '@mui/material';
 import { apiService } from '../../services/api';
-import { addFeuille, setFeuilles } from '../../features/feuillesMaladie/feuillesSlice';
+import { addFeuille, updateFeuille } from '../../features/feuillesMaladie/feuillesSlice';
 import { setAssures } from '../../features/assures/assuresSlice';
 import { setConsultations } from '../../features/consultations/consultationsSlice';
-import type { FeuilleMaladie, Assure, Consultation, PrescriptionMedicament } from '../../types';
+import type { FeuilleMaladie, Assure, Consultation, PrescriptionMedicament, Medecin, PrescriptionSpecialiste } from '../../types';
 import { todayStr } from '../../utils/dateHelpers';
 import type { RootState } from '../../store';
 
@@ -23,6 +23,8 @@ const validationSchema = Yup.object({
 
 const FeuilleFormPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEdit = !!id;
   const dispatch = useDispatch();
   const assures = useSelector((state: RootState) => state.assures.assures);
   const consultations = useSelector((state: RootState) => state.consultations.consultations);
@@ -30,6 +32,8 @@ const FeuilleFormPage = () => {
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(true);
   const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
+  const [specialistes, setSpecialistes] = useState<Medecin[]>([]);
+  const [formValues, setFormValues] = useState<typeof initialValues | null>(null);
 
   const initialValues = {
     assureId: '',
@@ -39,37 +43,90 @@ const FeuilleFormPage = () => {
     details: '',
     medicamentsPrescrits: '',
     recommandationSpecialiste: '',
+    motifSpecialiste: '',
+    justificatifSpecialiste: '',
     validee: true,
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aData, cData, pData] = await Promise.all([
+        const [aData, cData, pData, mData] = await Promise.all([
           apiService.get<Assure[]>('/assures'),
           apiService.get<Consultation[]>('/consultations'),
           apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
+          apiService.get<Medecin[]>('/medecins'),
         ]);
         dispatch(setAssures(aData));
         dispatch(setConsultations(cData));
         setMedicamentOptions([...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort());
+        setSpecialistes(mData.filter((m) => m.specialite === 'specialiste'));
+
+        if (isEdit && id) {
+          const existingFeuilles = await apiService.get<FeuilleMaladie[]>('/feuillesMaladie');
+          const existing = existingFeuilles.find(f => String(f.id) === id);
+          if (existing) {
+            setFormValues({
+              assureId: existing.assureId,
+              consultationId: existing.consultationId,
+              medecinId: existing.medecinId,
+              date: existing.date,
+              details: existing.details,
+              medicamentsPrescrits: existing.medicamentsPrescrits,
+              recommandationSpecialiste: '',
+              motifSpecialiste: '',
+              justificatifSpecialiste: '',
+              validee: existing.validee,
+            });
+          }
+        }
       } catch (err) {
         console.error('Erreur chargement', err);
       }
       setLoading(false);
     };
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, id, isEdit]);
 
-  const filteredConsultations = consultations.filter(
-    (c) => !c.assureId || (initialValues.assureId ? c.assureId === initialValues.assureId : true)
-  );
 
   const handleSubmit = async (values: typeof initialValues) => {
     setSubmitError('');
     try {
+      if (isEdit && id) {
+        const updated: Partial<FeuilleMaladie> = {
+          assureId: values.assureId,
+          consultationId: values.consultationId,
+          date: values.date,
+          details: values.details,
+          medicamentsPrescrits: values.medicamentsPrescrits,
+          recommandationSpecialiste: values.recommandationSpecialiste,
+          validee: values.validee,
+        };
+        await apiService.patch('/feuillesMaladie', id, updated);
+        dispatch(updateFeuille({ id, ...updated } as FeuilleMaladie));
+        navigate('/feuilles-maladie');
+        return;
+      }
       const existing = await apiService.get<FeuilleMaladie[]>('/feuillesMaladie');
       const maxId = Math.max(...existing.map((f) => parseInt(f.id)), 0);
+      let recomm = values.recommandationSpecialiste;
+      if (values.recommandationSpecialiste) {
+        const existingPresc = await apiService.get<PrescriptionSpecialiste[]>('/prescriptionsSpecialistes');
+        const maxPrescId = Math.max(...existingPresc.map((p) => parseInt(p.id)), 0);
+        const newPrescId = String(maxPrescId + 1);
+        const newPresc: PrescriptionSpecialiste = {
+          id: newPrescId,
+          assureId: values.assureId,
+          medecinIdGeneraliste: values.medecinId,
+          specialisteId: values.recommandationSpecialiste,
+          motif: values.motifSpecialiste || 'Non précisé',
+          justificatif: values.justificatifSpecialiste || 'Non précisé',
+          date: values.date,
+        };
+        await apiService.post('/prescriptionsSpecialistes', newPresc);
+        recomm = newPrescId;
+      }
+
       const newFeuille: FeuilleMaladie = {
         id: String(maxId + 1),
         consultationId: values.consultationId,
@@ -78,7 +135,7 @@ const FeuilleFormPage = () => {
         date: values.date,
         details: values.details,
         medicamentsPrescrits: values.medicamentsPrescrits,
-        recommandationSpecialiste: values.recommandationSpecialiste,
+        recommandationSpecialiste: recomm,
         validee: values.validee,
       };
       await apiService.post('/feuillesMaladie', newFeuille);
@@ -99,13 +156,18 @@ const FeuilleFormPage = () => {
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
-        Nouvelle feuille de maladie
+        {isEdit ? 'Modifier la feuille de maladie' : 'Nouvelle feuille de maladie'}
       </Typography>
 
       <Paper sx={{ p: { xs: 2, md: 4 } }}>
         {submitError && <Alert severity="error" sx={{ mb: 2 }}>{submitError}</Alert>}
 
-        <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+        <Formik
+          initialValues={formValues || initialValues}
+          enableReinitialize
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
           {({ values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
             <Form>
               <Grid container spacing={2}>
@@ -125,7 +187,9 @@ const FeuilleFormPage = () => {
                     helperText={touched.assureId && errors.assureId}
                     required
                   >
-                    {assures.map((a) => (
+                    {assures
+                      .filter(a => a.medecinTraitantId === user?.profilId)
+                      .map((a) => (
                       <MenuItem key={a.id} value={String(a.id)}>
                         {a.nom} {a.prenom}
                       </MenuItem>
@@ -163,7 +227,7 @@ const FeuilleFormPage = () => {
                     type="date"
                     value={values.date}
                     onChange={handleChange}
-                    InputLabelProps={{ shrink: true }}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     required
                   />
                 </Grid>
@@ -190,7 +254,7 @@ const FeuilleFormPage = () => {
                     value={values.medicamentsPrescrits}
                     onChange={handleChange}
                     placeholder="Ex: Paracétamol 500mg - 1 comprimé 3x/jour"
-                    inputProps={{ list: 'medicaments-list' }}
+                    slotProps={{ htmlInput: { list: 'medicaments-list' } }}
                   />
                   <datalist id="medicaments-list">
                     {medicamentOptions.map((opt) => (
@@ -201,13 +265,47 @@ const FeuilleFormPage = () => {
                 <Grid size={{ xs: 12 }}>
                   <TextField
                     fullWidth
+                    select
                     name="recommandationSpecialiste"
-                    label="Recommandation spécialiste"
+                    label="Recommandation spécialiste (optionnel)"
                     value={values.recommandationSpecialiste}
                     onChange={handleChange}
-                    multiline
-                    rows={2}
-                    placeholder="Si une consultation spécialiste est recommandée, précisez le motif"
+                    onBlur={handleBlur}
+                    error={touched.recommandationSpecialiste && !!errors.recommandationSpecialiste}
+                    helperText={touched.recommandationSpecialiste && errors.recommandationSpecialiste}
+                  >
+                    <MenuItem value="">
+                      <em>Aucun</em>
+                    </MenuItem>
+                    {specialistes.map((s) => (
+                      <MenuItem key={s.id} value={s.id}>
+                        Dr. {s.prenom} {s.nom}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <TextField
+                    fullWidth
+                    name="motifSpecialiste"
+                    label="Motif"
+                    value={values.motifSpecialiste}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Ex: Douleurs persistantes"
+                    disabled={!values.recommandationSpecialiste}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <TextField
+                    fullWidth
+                    name="justificatifSpecialiste"
+                    label="Justificatif"
+                    value={values.justificatifSpecialiste}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Ex: Examen clinique"
+                    disabled={!values.recommandationSpecialiste}
                   />
                 </Grid>
               </Grid>

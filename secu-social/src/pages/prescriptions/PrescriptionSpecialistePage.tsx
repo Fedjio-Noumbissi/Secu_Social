@@ -113,7 +113,9 @@ const PrescriptionSpecialistePage = () => {
                     helperText={touched.assureId && errors.assureId}
                     required
                   >
-                    {assures.map((a) => (
+                    {assures
+                      .filter(a => a.medecinTraitantId === user?.profilId)
+                      .map((a) => (
                       <MenuItem key={a.id} value={a.id}>
                         {a.nom} {a.prenom}
                       </MenuItem>

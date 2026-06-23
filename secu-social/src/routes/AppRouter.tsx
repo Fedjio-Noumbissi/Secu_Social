@@ -72,10 +72,12 @@ const AppRouter = () => {
 
         <Route path="/consultations" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><ConsultationsListPage /></DashboardLayout></RoleGuard>} />
         <Route path="/consultations/new" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><ConsultationFormPage /></DashboardLayout></RoleGuard>} />
+        <Route path="/consultations/:id/edit" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><ConsultationFormPage /></DashboardLayout></RoleGuard>} />
         <Route path="/consultations/:id" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><ConsultationDetailPage /></DashboardLayout></RoleGuard>} />
 
         <Route path="/feuilles-maladie" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><FeuillesListPage /></DashboardLayout></RoleGuard>} />
         <Route path="/feuilles-maladie/new" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><FeuilleFormPage /></DashboardLayout></RoleGuard>} />
+        <Route path="/feuilles-maladie/:id/edit" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><FeuilleFormPage /></DashboardLayout></RoleGuard>} />
         <Route path="/feuilles-maladie/:id" element={<RoleGuard allowedRoles={['medecin', 'assureur']}><DashboardLayout><FeuilleDetailPage /></DashboardLayout></RoleGuard>} />
 
         <Route path="/prescriptions/medicaments" element={<RoleGuard allowedRoles={['medecin']}><DashboardLayout><PrescriptionMedicamentPage /></DashboardLayout></RoleGuard>} />

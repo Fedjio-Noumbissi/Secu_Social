@@ -24,6 +24,7 @@ export interface Assure {
   adresse: string;
   telephone: string;
   email: string;
+  rib?: string;            // Numéro de compte bancaire (format CEMAC Cameroun)
   medecinTraitantId?: string;
 }
 

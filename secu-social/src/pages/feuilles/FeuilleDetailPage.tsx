@@ -18,6 +18,7 @@ const FeuilleDetailPage = () => {
   const [assure, setAssure] = useState<Assure | null>(null);
   const [medecin, setMedecin] = useState<Medecin | null>(null);
   const [consultation, setConsultation] = useState<Consultation | null>(null);
+  const [specialiste, setSpecialiste] = useState<Medecin | null>(null);
   const [loading, setLoading] = useState(true);
   const [validating, setValidating] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -48,6 +49,26 @@ const FeuilleDetailPage = () => {
 
         const c = consultationsData.find((c) => String(c.id) === String(f.consultationId));
         if (c) setConsultation(c);
+
+        // Resolve specialist from prescriptionsSpecialistes or directly from medecins
+        if (f.recommandationSpecialiste) {
+          // Try to find as a prescription ID first, then directly as medecin ID
+          try {
+            const prescsData = await apiService.get<Array<{id: string; specialisteId: string}>>('/prescriptionsSpecialistes');
+            const presc = prescsData.find(p => String(p.id) === String(f.recommandationSpecialiste));
+            if (presc) {
+              const sp = medecinsData.find(m => String(m.id) === String(presc.specialisteId));
+              if (sp) setSpecialiste(sp);
+            } else {
+              // Fallback: treat as direct medecin ID
+              const sp = medecinsData.find(m => String(m.id) === String(f.recommandationSpecialiste));
+              if (sp) setSpecialiste(sp);
+            }
+          } catch {
+            const sp = medecinsData.find(m => String(m.id) === String(f.recommandationSpecialiste));
+            if (sp) setSpecialiste(sp);
+          }
+        }
 
       } catch (err) {
         console.error('Erreur chargement détail feuille', err);
@@ -215,8 +236,22 @@ const FeuilleDetailPage = () => {
                 )}
                 {feuille.recommandationSpecialiste && (
                   <Grid size={{ xs: 12 }}>
-                    <Typography variant="caption" color="text.secondary">Recommandation spécialiste</Typography>
-                    <Typography variant="body1" sx={{ mt: 0.5, whiteSpace: 'pre-wrap' }}>{feuille.recommandationSpecialiste}</Typography>
+                    <Typography variant="caption" color="text.secondary">Spécialiste attribué</Typography>
+                    {specialiste ? (
+                      <Box sx={{ mt: 0.5, p: 1.5, border: '1px solid #D2691E', borderRadius: 1, bgcolor: '#FFF8F0' }}>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          Dr. {specialiste.prenom} {specialiste.nom}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                          {specialiste.specialite}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {specialiste.telephone} &bull; {specialiste.email}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      <Typography variant="body1" sx={{ mt: 0.5 }}>{feuille.recommandationSpecialiste}</Typography>
+                    )}
                   </Grid>
                 )}
               </Grid>

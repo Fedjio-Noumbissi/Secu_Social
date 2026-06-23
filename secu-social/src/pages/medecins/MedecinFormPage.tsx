@@ -68,6 +68,20 @@ const MedecinFormPage = () => {
   const handleSubmit = async (values: Medecin) => {
     setSubmitError('');
     try {
+      // — Unicité du matricule —
+      const allMedecins = await apiService.get<Medecin[]>('/medecins');
+      const duplicate = allMedecins.find(
+        (m) =>
+          m.matricule === values.matricule &&
+          String(m.id) !== String(id)   // ignore self when editing
+      );
+      if (duplicate) {
+        setSubmitError(
+          `Le matricule « ${values.matricule} » est déjà attribué au Dr. ${duplicate.prenom} ${duplicate.nom}.`
+        );
+        return;
+      }
+
       if (isEditing) {
         await apiService.put('/medecins', id!, values);
         dispatch(updateMedecin(values));
@@ -189,7 +203,7 @@ const MedecinFormPage = () => {
                     error={touched.telephone && !!errors.telephone}
                     helperText={touched.telephone && errors.telephone}
                     placeholder="+237XXXXXXXXX"
-                    inputProps={{ maxLength: 16 }}
+                    slotProps={{ htmlInput: { maxLength: 16 } }}
                     required
                   />
                 </Grid>

@@ -37,6 +37,7 @@ const DashboardPage = () => {
   const [medecins, setMedecins] = useState<Medecin[]>([]);
   const [remboursements, setRemboursements] = useState<Remboursement[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +52,23 @@ const DashboardPage = () => {
         const isMedecin = user?.role === 'medecin';
         const filteredAssures = isMedecin ? assuresData.filter(a => a.medecinTraitantId === user?.profilId) : assuresData;
         const filteredConsultations = isMedecin ? consultData.filter(c => c.medecinId === user?.profilId) : consultData;
+
+        // Build greeting name with title and specialty
+        if (user?.profilId) {
+          if (isMedecin) {
+            const medProfil = medecinsData.find(m => String(m.id) === String(user.profilId));
+            if (medProfil) {
+              const specialiteLabel = medProfil.specialite === 'generaliste' ? 'Généraliste' : 'Spécialiste';
+              setDisplayName(`Dr. ${medProfil.prenom} ${medProfil.nom} (${specialiteLabel})`);
+            }
+          } else {
+            const agentProfil = assuresData.find(a => String(a.id) === String(user.profilId));
+            if (agentProfil) setDisplayName(`${agentProfil.prenom} ${agentProfil.nom} (Assureur)`);
+            else setDisplayName(user.email || '');
+          }
+        } else {
+          setDisplayName(user?.email || '');
+        }
 
         setAssures(filteredAssures);
         setMedecins(medecinsData);
@@ -102,7 +120,7 @@ const DashboardPage = () => {
             recentRemboursements={recentRemboursements}
             consultations={consultations}
             assures={assures}
-            userName={user?.prenom ? `${user.prenom} ${user.nom}` : user?.email || ''}
+            userName={displayName || user?.email || ''}
           />
         );
       case 'remboursements':

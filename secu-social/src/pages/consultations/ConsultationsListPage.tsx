@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
-  Menu, MenuItem, ListItemIcon, ListItemText
+  Menu, MenuItem, ListItemIcon, ListItemText,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
-import { Add as AddIcon, Visibility as ViewIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import { Add as AddIcon, Visibility as ViewIcon, MoreVert as MoreVertIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { apiService } from '../../services/api';
 import { setConsultations } from '../../features/consultations/consultationsSlice';
 import type { Consultation, Assure } from '../../types';
@@ -24,6 +25,7 @@ const ConsultationsListPage = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeConsultationId, setActiveConsultationId] = useState<string | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<string | null>(null);
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, consultationId: string) => {
     setAnchorEl(event.currentTarget);
@@ -33,6 +35,18 @@ const ConsultationsListPage = () => {
   const handleCloseMenu = () => {
     setAnchorEl(null);
     setActiveConsultationId(null);
+  };
+
+  const handleDelete = async (consultId: string) => {
+    try {
+      await apiService.delete('/consultations', consultId);
+      // Reload list
+      const updated = await apiService.get<Consultation[]>('/consultations');
+      dispatch(setConsultations(updated));
+    } catch (err) {
+      console.error('Erreur suppression', err);
+    }
+    setDeleteDialog(null);
   };
 
   useEffect(() => {
@@ -128,16 +142,35 @@ const ConsultationsListPage = () => {
         />
       </TableContainer>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
         <MenuItem onClick={() => { navigate(`/consultations/${activeConsultationId}`); handleCloseMenu(); }}>
           <ListItemIcon><ViewIcon fontSize="small" color="primary" /></ListItemIcon>
           <ListItemText>Voir détails</ListItemText>
         </MenuItem>
+        <MenuItem onClick={() => { navigate(`/consultations/${activeConsultationId}/edit`); handleCloseMenu(); }}>
+          <ListItemIcon><EditIcon fontSize="small" color="info" /></ListItemIcon>
+          <ListItemText>Modifier</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { activeConsultationId && setDeleteDialog(activeConsultationId); handleCloseMenu(); }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>Supprimer</ListItemText>
+        </MenuItem>
       </Menu>
+
+      <Dialog open={!!deleteDialog} onClose={() => setDeleteDialog(null)}>
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer cette consultation ? Cette action est irréversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialog(null)} color="primary">Annuler</Button>
+          <Button onClick={() => deleteDialog && handleDelete(deleteDialog)} color="error" variant="contained">
+            Supprimer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

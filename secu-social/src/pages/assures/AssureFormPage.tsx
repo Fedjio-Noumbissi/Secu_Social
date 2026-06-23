@@ -11,6 +11,14 @@ import { apiService } from '../../services/api';
 import { addAssure, updateAssure, setAssures } from '../../features/assures/assuresSlice';
 import type { Assure } from '../../types';
 
+// Format Visa : 16 chiffres commençant par 4 (ex : 4532 1234 5678 9010)
+const VISA_REGEX = /^4\d{15}$/;
+
+const formatVisa = (raw: string) =>
+  raw.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
+
+const cleanVisa = (formatted: string) => formatted.replace(/\s/g, '');
+
 const validationSchema = Yup.object({
   nom: Yup.string().required('Le nom est requis'),
   prenom: Yup.string().required('Le prénom est requis'),
@@ -25,6 +33,13 @@ const validationSchema = Yup.object({
     .required('Le téléphone est requis')
     .matches(/^\+237[6-9]\d{8}$/, 'Format: +237XXXXXXXXX (9 chiffres après +237)'),
   email: Yup.string().email('Email invalide').required('L\'email est requis'),
+  rib: Yup.string()
+    .optional()
+    .test(
+      'visa-format',
+      'Numéro Visa invalide : doit commencer par 4 et contenir exactement 16 chiffres.',
+      (val) => !val || VISA_REGEX.test(cleanVisa(val))
+    ),
 });
 
 const AssureFormPage = () => {
@@ -42,6 +57,7 @@ const AssureFormPage = () => {
     adresse: '',
     telephone: '+237',
     email: '',
+    rib: '',
   });
   const [loading, setLoading] = useState(isEditing);
   const [submitError, setSubmitError] = useState('');
@@ -68,6 +84,34 @@ const AssureFormPage = () => {
   const handleSubmit = async (values: Assure) => {
     setSubmitError('');
     try {
+      // — Unicité du numéro de sécurité sociale —
+      const allAssures = await apiService.get<Assure[]>('/assures');
+      const dupSecu = allAssures.find(
+        (a) => a.numSecu === values.numSecu && String(a.id) !== String(id)
+      );
+      if (dupSecu) {
+        setSubmitError(
+          `Le numéro de sécurité sociale « ${values.numSecu} » est déjà attribué à ${dupSecu.prenom} ${dupSecu.nom}.`
+        );
+        return;
+      }
+
+      // — Unicité du numéro de carte Visa —
+      if (values.rib) {
+        const ribClean = cleanVisa(values.rib);
+        const dupRib = allAssures.find(
+          (a) => a.rib && cleanVisa(a.rib) === ribClean && String(a.id) !== String(id)
+        );
+        if (dupRib) {
+          setSubmitError(
+            `Le numéro de carte « ${values.rib} » est déjà enregistré pour ${dupRib.prenom} ${dupRib.nom}.`
+          );
+          return;
+        }
+        // Store in formatted form (XXXX XXXX XXXX XXXX)
+        values = { ...values, rib: formatVisa(ribClean) };
+      }
+
       if (isEditing) {
         await apiService.put('/assures', id!, values);
         dispatch(updateAssure(values));
@@ -104,7 +148,7 @@ const AssureFormPage = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
+          {({ values, errors, touched, handleChange, handleBlur }) => (
             <Form>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, sm: 6 }}>
@@ -144,7 +188,7 @@ const AssureFormPage = () => {
                     onBlur={handleBlur}
                     error={touched.dateNaissance && !!errors.dateNaissance}
                     helperText={touched.dateNaissance && errors.dateNaissance}
-                    InputLabelProps={{ shrink: true }}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     required
                   />
                 </Grid>
@@ -175,7 +219,7 @@ const AssureFormPage = () => {
                     onBlur={handleBlur}
                     error={touched.numSecu && !!errors.numSecu}
                     helperText={touched.numSecu && errors.numSecu}
-                    inputProps={{ maxLength: 13 }}
+                    slotProps={{ htmlInput: { maxLength: 13 } }}
                     required
                   />
                 </Grid>
@@ -190,7 +234,7 @@ const AssureFormPage = () => {
                     error={touched.telephone && !!errors.telephone}
                     helperText={touched.telephone && errors.telephone}
                     placeholder="+237XXXXXXXXX"
-                    inputProps={{ maxLength: 16 }}
+                    slotProps={{ htmlInput: { maxLength: 16 } }}
                     required
                   />
                 </Grid>
@@ -221,6 +265,30 @@ const AssureFormPage = () => {
                     error={touched.email && !!errors.email}
                     helperText={touched.email && errors.email}
                     required
+                  />
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <TextField
+                    fullWidth
+                    name="rib"
+                    label="💳 Numéro de carte Visa (optionnel)"
+                    value={values.rib || ''}
+                    onChange={(e) => {
+                      // Auto-format as XXXX XXXX XXXX XXXX while typing
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 16);
+                      const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+                      e.target.value = formatted;
+                      handleChange(e);
+                    }}
+                    onBlur={handleBlur}
+                    error={touched.rib && !!errors.rib}
+                    helperText={
+                      touched.rib && errors.rib
+                        ? errors.rib
+                        : '16 chiffres commençant par 4 — sera pré-rempli automatiquement lors des remboursements par virement'
+                    }
+                    slotProps={{ htmlInput: { maxLength: 19, style: { letterSpacing: '0.15em', fontFamily: 'monospace', fontSize: '1.05rem' } } }}
+                    placeholder="4XXX XXXX XXXX XXXX"
                   />
                 </Grid>
               </Grid>

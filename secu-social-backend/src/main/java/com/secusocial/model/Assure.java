@@ -36,6 +36,9 @@ public class Assure {
   @Column(name = "medecin_traitant_id")
   private String medecinTraitantId;
 
+  @Column(name = "rib", length = 19)
+  private String rib;
+
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
   public String getNom() { return nom; }
@@ -54,6 +57,8 @@ public class Assure {
   public void setTelephone(String telephone) { this.telephone = telephone; }
   public String getEmail() { return email; }
   public void setEmail(String email) { this.email = email; }
+  public String getRib() { return rib; }
+  public void setRib(String rib) { this.rib = rib; }
   public String getMedecinTraitantId() { return medecinTraitantId; }
   public void setMedecinTraitantId(String medecinTraitantId) { this.medecinTraitantId = medecinTraitantId; }
 }

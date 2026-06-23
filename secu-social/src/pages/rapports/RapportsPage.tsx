@@ -72,22 +72,55 @@ const RapportsPage = () => {
     return days > 30;
   });
 
+  const periodLabel = period === 'mois' ? 'Ce mois' : period === 'trimestre' ? 'Ce trimestre' : 'Cette année';
+
   const handleExport = (format: 'csv' | 'json') => {
     const exportData = filteredData.map((r) => ({
-      Date: formatDate(r.date),
-      Montant: r.montantRembourse,
-      Taux: `${r.taux}%`,
-      Mode: r.modePaiement === 'virement' ? 'Virement' : 'Espèces',
+      'Date': formatDate(r.date),
+      'Montant remboursé (FCFA)': r.montantRembourse,
+      'Taux de remboursement': `${r.taux}%`,
+      'Mode de paiement': r.modePaiement === 'virement' ? 'Virement bancaire' : 'Espèces',
+      'RIB': r.rib || '—',
     }));
-    if (format === 'csv') exportCSV(exportData, 'rapport_remboursements');
-    else exportJSON(exportData, 'rapport_remboursements');
+    if (format === 'csv') {
+      exportCSV(exportData, 'rapport_remboursements');
+    } else {
+      exportJSON(
+        exportData,
+        'rapport_remboursements',
+        {
+          titre: 'Rapport des remboursements',
+          periode: periodLabel,
+          total: `${totalRembourse} FCFA`,
+        }
+      );
+    }
   };
 
   const handleExportPDF = () => {
-    const content = filteredData.map((r) =>
-      `${formatDate(r.date)} - ${formatCurrency(r.montantRembourse)} (Taux: ${r.taux}%) - ${r.modePaiement === 'virement' ? 'Virement' : 'Espèces'}`
-    ).join('\n');
-    exportPDF('Rapport des remboursements', content);
+    const columns = ['Date', 'Montant (FCFA)', 'Taux', 'Mode de paiement'];
+    const rows = filteredData.map((r) => ({
+      'Date': formatDate(r.date),
+      'Montant (FCFA)': formatCurrency(r.montantRembourse),
+      'Taux': `${r.taux}%`,
+      'Mode de paiement': r.modePaiement === 'virement' ? 'Virement' : 'Espèces',
+    }));
+    exportPDF(
+      'Rapport des remboursements',
+      '',
+      {
+        rows,
+        columns,
+        subtitle: `Période : ${periodLabel}`,
+        periodLabel,
+        totals: [
+          { label: 'Total remboursé', value: formatCurrency(totalRembourse) },
+          { label: 'Nb consultations', value: String(nbConsultations) },
+          { label: 'Moyenne / consultation', value: nbConsultations > 0 ? formatCurrency(Math.round(totalRembourse / nbConsultations)) : '0 FCFA' },
+          { label: 'Alertes (>30j)', value: String(pendingAlertes.length) },
+        ],
+      }
+    );
   };
 
   const handlePrint = () => {

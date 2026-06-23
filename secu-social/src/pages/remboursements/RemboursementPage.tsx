@@ -9,7 +9,7 @@ import PrintIcon from '@mui/icons-material/Print';
 import { apiService } from '../../services/api';
 import { setAssures } from '../../features/assures/assuresSlice';
 import { setFeuilles } from '../../features/feuillesMaladie/feuillesSlice';
-import { addRemboursement, setRemboursements } from '../../features/remboursements/remboursementsSlice';
+import { addRemboursement, setRemboursements, updateRemboursement } from '../../features/remboursements/remboursementsSlice';
 import { setMedecins } from '../../features/medecins/medecinsSlice';
 import type { Assure, FeuilleMaladie, Remboursement, Medecin, Consultation } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -131,11 +131,25 @@ const RemboursementPage = () => {
     }
   };
 
-  const handlePrint = (remb: Remboursement) => {
+  const handlePrint = async (remb: Remboursement) => {
     const assure = assures.find((a) => String(a.id) === String(remb.assureId));
     const consultation = consultations.find((c) => String(c.id) === String(remb.consultationId));
     const medecin = consultation ? medecins.find((m) => String(m.id) === String(consultation.medecinId)) : undefined;
-    setPrintData({ remb, assure, medecin });
+
+    // Mark as printed immediately
+    if (!remb.imprime) {
+      try {
+        await apiService.patch('/remboursements', remb.id, { imprime: true });
+        dispatch(updateRemboursement({ ...remb, imprime: true }));
+        // Use the updated object for printing
+        setPrintData({ remb: { ...remb, imprime: true }, assure, medecin });
+      } catch {
+        // Even if patch fails, allow printing
+        setPrintData({ remb, assure, medecin });
+      }
+    } else {
+      setPrintData({ remb, assure, medecin });
+    }
   };
 
   useEffect(() => {
@@ -199,7 +213,13 @@ const RemboursementPage = () => {
                       border: selectedAssure?.id === a.id ? '2px solid #8B4513' : '1px solid #E8E0D8',
                       bgcolor: selectedAssure?.id === a.id ? '#FFF8F0' : 'white',
                     }}
-                    onClick={() => { setSelectedAssure(a); setSelectedFeuille(null); setIsCalculated(false); }}
+                    onClick={() => {
+                      setSelectedAssure(a);
+                      setSelectedFeuille(null);
+                      setIsCalculated(false);
+                      // Pre-fill RIB from assure profile
+                      setRib(a.rib || '');
+                    }}
                   >
                     <CardContent sx={{ py: 1, '&:last-child': { pb: 1 } }}>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -298,15 +318,48 @@ const RemboursementPage = () => {
                     <MenuItem value="especes">Espèces (cash)</MenuItem>
                   </TextField>
                   {modePaiement === 'virement' && (
-                    <TextField
-                      fullWidth
-                      label="RIB (Relevé d'Identité Bancaire)"
-                      value={rib}
-                      onChange={(e) => setRib(e.target.value)}
-                      size="small"
-                      required
-                      sx={{ mb: 2 }}
-                    />
+                    <Box sx={{ mb: 2 }}>
+                      <TextField
+                        fullWidth
+                        label={
+                          selectedAssure?.rib
+                            ? '💳 Carte Visa (depuis la fiche assuré)'
+                            : '💳 Numéro de carte Visa'
+                        }
+                        value={rib}
+                        onChange={(e) => {
+                          if (selectedAssure?.rib) return; // locked if from profile
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 16);
+                          setRib(digits.replace(/(\d{4})(?=\d)/g, '$1 '));
+                        }}
+                        size="small"
+                        required
+                        placeholder="4XXX XXXX XXXX XXXX"
+                        slotProps={{
+                          htmlInput: {
+                            maxLength: 19,
+                            readOnly: !!selectedAssure?.rib,
+                            style: {
+                              fontFamily: 'monospace',
+                              letterSpacing: '0.15em',
+                              fontSize: '1rem',
+                              background: selectedAssure?.rib ? '#f0fdf4' : undefined,
+                              cursor: selectedAssure?.rib ? 'default' : undefined,
+                            },
+                          },
+                        }}
+                        helperText={
+                          selectedAssure?.rib
+                            ? '✅ Pré-rempli automatiquement depuis la fiche — non modifiable ici'
+                            : '⚠️ Aucun RIB enregistré. Saisissez-le ou mettez à jour la fiche assuré.'
+                        }
+                        sx={{
+                          '& .MuiOutlinedInput-root': selectedAssure?.rib
+                            ? { bgcolor: '#f0fdf4', '& fieldset': { borderColor: '#4caf50' } }
+                            : {},
+                        }}
+                      />
+                    </Box>
                   )}
                   <Button variant="contained" color="primary" fullWidth onClick={handleSave}>
                     Enregistrer

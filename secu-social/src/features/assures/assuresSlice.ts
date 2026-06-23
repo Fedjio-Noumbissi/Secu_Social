@@ -29,13 +29,17 @@ const assuresSlice = createSlice({
       state.assures.push(action.payload);
     },
     updateAssure(state, action: PayloadAction<Assure>) {
-      const index = state.assures.findIndex((a) => a.id === action.payload.id);
+      const index = state.assures.findIndex(
+        (a) => String(a.id) === String(action.payload.id)
+      );
       if (index !== -1) {
         state.assures[index] = action.payload;
       }
     },
     removeAssure(state, action: PayloadAction<string>) {
-      state.assures = state.assures.filter((a) => a.id !== action.payload);
+      state.assures = state.assures.filter(
+        (a) => String(a.id) !== String(action.payload)
+      );
     },
     selectAssure(state, action: PayloadAction<Assure | null>) {
       state.selectedAssure = action.payload;
