@@ -405,16 +405,19 @@ const RemboursementPage = () => {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      <Tooltip title="Imprimer le reçu">
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => handlePrint(r)}
-                          startIcon={<PrintIcon />}
-                        >
-                          Reçu
-                        </Button>
+                      <Tooltip title={r.imprime ? "Déjà imprimé" : "Imprimer le reçu"}>
+                        <span>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handlePrint(r)}
+                            startIcon={<PrintIcon />}
+                            disabled={r.imprime}
+                          >
+                            Reçu
+                          </Button>
+                        </span>
                       </Tooltip>
                     </TableCell>
                   </TableRow>
