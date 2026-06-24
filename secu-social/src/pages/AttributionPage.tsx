@@ -130,18 +130,18 @@ const AttributionPage = () => {
       medecinTraitantId: undefined,
     };
 
-    await apiService.post('/assures', newAssure);
-    dispatch(addAssure(newAssure));
+    const savedAssure = await apiService.post<Assure>('/assures', newAssure);
+    dispatch(addAssure(savedAssure));
 
     // Link assureId back to médecin and update Redux
     try {
-      await apiService.patch<Medecin>('/medecins', medecin.id, { assureId: newAssure.id });
-      dispatch(updateMedecin({ ...medecin, assureId: newAssure.id }));
+      await apiService.patch<Medecin>('/medecins', medecin.id, { assureId: savedAssure.id });
+      dispatch(updateMedecin({ ...medecin, assureId: savedAssure.id }));
     } catch {
       // Non-blocking: link is best-effort
     }
 
-    return newAssure;
+    return savedAssure;
   };
 
   const handleAssign = async () => {
