@@ -10,7 +10,7 @@ import {
 import { apiService } from '../../services/api';
 import { addConsultation, updateConsultation } from '../../features/consultations/consultationsSlice';
 import { setAssures } from '../../features/assures/assuresSlice';
-import type { Consultation, Assure, PrescriptionMedicament } from '../../types';
+import type { Consultation, Assure, PrescriptionMedicament, PrescriptionSpecialiste } from '../../types';
 import { todayStr } from '../../utils/dateHelpers';
 import type { RootState } from '../../store';
 
@@ -25,11 +25,12 @@ const ConsultationFormPage = () => {
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
   const dispatch = useDispatch();
-  const assures = useSelector((state: RootState) => state.assures.assures);
+
   const user = useSelector((state: RootState) => state.auth.user);
   const [submitError, setSubmitError] = useState('');
   const [assuresLoading, setAssuresLoading] = useState(true);
   const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
+  const [myPatients, setMyPatients] = useState<Assure[]>([]);
   const [formValues, setFormValues] = useState<typeof initialValues | null>(null);
 
   const initialValues = {
@@ -49,12 +50,23 @@ const ConsultationFormPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aData, pData] = await Promise.all([
+        const [aData, pData, pSpecData] = await Promise.all([
           apiService.get<Assure[]>('/assures'),
           apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
+          apiService.get<PrescriptionSpecialiste[]>('/prescriptionsSpecialistes'),
         ]);
         dispatch(setAssures(aData));
         setMedicamentOptions([...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort());
+
+        const assignedIds = new Set(
+          pSpecData
+            .filter(p => String(p.specialisteId) === String(user?.profilId))
+            .map(p => String(p.assureId))
+        );
+        const patients = aData.filter(
+          a => String(a.medecinTraitantId) === String(user?.profilId) || assignedIds.has(String(a.id))
+        );
+        setMyPatients(patients);
 
         if (isEdit && id) {
           const allConsults = await apiService.get<Consultation[]>('/consultations');
@@ -181,9 +193,7 @@ const ConsultationFormPage = () => {
                     helperText={touched.assureId && errors.assureId}
                     required
                   >
-                    {assures
-                      .filter(a => a.medecinTraitantId === user?.profilId)
-                      .map((a) => (
+                    {myPatients.map((a) => (
                       <MenuItem key={a.id} value={a.id}>
                         {a.nom} {a.prenom} - **** *** {a.numSecu.slice(-4)}
                       </MenuItem>

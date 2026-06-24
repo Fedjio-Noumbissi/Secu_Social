@@ -14,6 +14,7 @@ import OverviewTab from './dashboard/OverviewTab';
 import RemboursementsTab from './dashboard/RemboursementsTab';
 import ActivityTab from './dashboard/ActivityTab';
 import AlertsTab from './dashboard/AlertsTab';
+import type { PrescriptionSpecialiste, FeuilleMaladie } from '../types';
 
 const allTabs = [
   { label: 'Vue d\'ensemble', icon: <DashboardIcon />, roles: ['assureur', 'medecin'], component: 'overview' as const },
@@ -37,21 +38,58 @@ const DashboardPage = () => {
   const [medecins, setMedecins] = useState<Medecin[]>([]);
   const [remboursements, setRemboursements] = useState<Remboursement[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [feuillesMaladie, setFeuillesMaladie] = useState<FeuilleMaladie[]>([]);
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [assuresData, medecinsData, rembData, consultData] = await Promise.all([
+        const [assuresData, medecinsData, rembData, consultData, prescriptionsData, feuillesData] = await Promise.all([
           apiService.get<Assure[]>('/assures'),
           apiService.get<Medecin[]>('/medecins'),
           apiService.get<Remboursement[]>('/remboursements'),
           apiService.get<Consultation[]>('/consultations'),
+          apiService.get<PrescriptionSpecialiste[]>('/prescriptionsSpecialistes').catch(() => []),
+          apiService.get<FeuilleMaladie[]>('/feuillesMaladie').catch(() => []),
         ]);
 
         const isMedecin = user?.role === 'medecin';
-        const filteredAssures = isMedecin ? assuresData.filter(a => a.medecinTraitantId === user?.profilId) : assuresData;
-        const filteredConsultations = isMedecin ? consultData.filter(c => c.medecinId === user?.profilId) : consultData;
+        
+        let filteredAssures = assuresData;
+        let myAssureIds: string[] = [];
+
+        if (isMedecin) {
+          const assignedAssureIds = prescriptionsData
+            .filter(p => String(p.specialisteId) === String(user?.profilId))
+            .map(p => String(p.assureId));
+            
+          const consultedAssureIds = consultData
+            .filter(c => String(c.medecinId) === String(user?.profilId))
+            .map(c => String(c.assureId));
+
+          const feuillesAssureIds = feuillesData
+            .filter(f => String(f.medecinId) === String(user?.profilId))
+            .map(f => String(f.assureId));
+
+          const allMyAssureIds = new Set([
+            ...assignedAssureIds,
+            ...consultedAssureIds,
+            ...feuillesAssureIds
+          ]);
+            
+          filteredAssures = assuresData.filter(
+            a => String(a.medecinTraitantId) === String(user?.profilId) || allMyAssureIds.has(String(a.id))
+          );
+          myAssureIds = filteredAssures.map(a => String(a.id));
+        }
+
+        const filteredConsultations = isMedecin 
+          ? consultData.filter(c => String(c.medecinId) === String(user?.profilId) || myAssureIds.includes(String(c.assureId))) 
+          : consultData;
+          
+        const filteredFeuilles = isMedecin
+          ? feuillesData.filter(f => String(f.medecinId) === String(user?.profilId) || myAssureIds.includes(String(f.assureId)))
+          : feuillesData;
 
         // Build greeting name with title and specialty
         if (user?.profilId) {
@@ -73,6 +111,7 @@ const DashboardPage = () => {
         setAssures(filteredAssures);
         setMedecins(medecinsData);
         setConsultations(filteredConsultations);
+        setFeuillesMaladie(filteredFeuilles);
         setRecentRemboursements(rembData.slice(-3).reverse());
         setRemboursements(rembData);
 
@@ -119,6 +158,7 @@ const DashboardPage = () => {
             role={role || ''}
             recentRemboursements={recentRemboursements}
             consultations={consultations}
+            feuilles={feuillesMaladie}
             assures={assures}
             userName={displayName || user?.email || ''}
           />
@@ -129,6 +169,7 @@ const DashboardPage = () => {
         return (
           <ActivityTab
             consultations={consultations}
+            feuilles={feuillesMaladie}
             assures={assures}
             medecins={medecins}
             userId={user?.id}

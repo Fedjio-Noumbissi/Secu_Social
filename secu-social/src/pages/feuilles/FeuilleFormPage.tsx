@@ -26,13 +26,14 @@ const FeuilleFormPage = () => {
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
   const dispatch = useDispatch();
-  const assures = useSelector((state: RootState) => state.assures.assures);
+
   const consultations = useSelector((state: RootState) => state.consultations.consultations);
   const user = useSelector((state: RootState) => state.auth.user);
   const [submitError, setSubmitError] = useState('');
   const [loading, setLoading] = useState(true);
   const [medicamentOptions, setMedicamentOptions] = useState<string[]>([]);
   const [specialistes, setSpecialistes] = useState<Medecin[]>([]);
+  const [myPatients, setMyPatients] = useState<Assure[]>([]);
   const [formValues, setFormValues] = useState<typeof initialValues | null>(null);
 
   const initialValues = {
@@ -51,16 +52,27 @@ const FeuilleFormPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aData, cData, pData, mData] = await Promise.all([
+        const [aData, cData, pData, mData, pSpecData] = await Promise.all([
           apiService.get<Assure[]>('/assures'),
           apiService.get<Consultation[]>('/consultations'),
           apiService.get<PrescriptionMedicament[]>('/prescriptionsMedicaments'),
           apiService.get<Medecin[]>('/medecins'),
+          apiService.get<PrescriptionSpecialiste[]>('/prescriptionsSpecialistes'),
         ]);
         dispatch(setAssures(aData));
         dispatch(setConsultations(cData));
         setMedicamentOptions([...new Set(pData.map((p) => p.medicament).filter(Boolean))].sort());
         setSpecialistes(mData.filter((m) => m.specialite === 'specialiste'));
+
+        const assignedIds = new Set(
+          pSpecData
+            .filter(p => String(p.specialisteId) === String(user?.profilId))
+            .map(p => String(p.assureId))
+        );
+        const patients = aData.filter(
+          a => String(a.medecinTraitantId) === String(user?.profilId) || assignedIds.has(String(a.id))
+        );
+        setMyPatients(patients);
 
         if (isEdit && id) {
           const existingFeuilles = await apiService.get<FeuilleMaladie[]>('/feuillesMaladie');
@@ -187,9 +199,7 @@ const FeuilleFormPage = () => {
                     helperText={touched.assureId && errors.assureId}
                     required
                   >
-                    {assures
-                      .filter(a => a.medecinTraitantId === user?.profilId)
-                      .map((a) => (
+                    {myPatients.map((a) => (
                       <MenuItem key={a.id} value={String(a.id)}>
                         {a.nom} {a.prenom}
                       </MenuItem>

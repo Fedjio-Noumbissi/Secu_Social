@@ -1,19 +1,19 @@
-import { useMemo } from 'react';
-import { Box, Grid, Paper, Typography, List, ListItem, ListItemText, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { CalendarToday as CalendarIcon, People as PeopleIcon, Description as DescriptionIcon } from '@mui/icons-material';
-import type { Consultation, Assure, Medecin } from '../../types';
+import { Box, Grid, Paper, Typography, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { CalendarToday as CalendarIcon, People as PeopleIcon } from '@mui/icons-material';
+import type { Consultation, Assure, Medecin, FeuilleMaladie } from '../../types';
 import { formatDate } from '../../utils/dateHelpers';
 import { maskSSN } from '../../utils/maskSSN';
 
 interface ActivityTabProps {
   consultations: Consultation[];
+  feuilles: FeuilleMaladie[];
   assures: Assure[];
   medecins: Medecin[];
   userId?: string;
   role: string;
 }
 
-const ActivityTab = ({ consultations, assures, medecins, userId, role }: ActivityTabProps) => {
+const ActivityTab = ({ consultations, feuilles, assures, medecins, userId, role }: ActivityTabProps) => {
   const now = new Date();
   const monthConsultations = consultations.filter((c) => {
     const d = new Date(c.date);
@@ -23,21 +23,28 @@ const ActivityTab = ({ consultations, assures, medecins, userId, role }: Activit
   const todayConsultations = consultations.filter((c) => c.date === now.toISOString().split('T')[0]);
 
   const getAssureName = (id: string) => {
-    const a = assures.find(a => a.id === id);
+    const a = assures.find(a => String(a.id) === String(id));
     return a ? `${a.prenom} ${a.nom}` : 'Inconnu';
   };
 
   const getMedecinName = (id: string) => {
-    const m = medecins.find(m => m.id === id);
+    const m = medecins.find(m => String(m.id) === String(id));
     return m ? `Dr ${m.prenom} ${m.nom}` : 'Inconnu';
   };
 
   const myConsultations = role === 'medecin'
     ? consultations.filter(c => {
-        const m = medecins.find(m => m.userId === userId);
-        return m && c.medecinId === m.id;
+        const m = medecins.find(m => String(m.userId) === String(userId));
+        return m && String(c.medecinId) === String(m.id);
       })
     : consultations;
+
+  const myFeuilles = role === 'medecin'
+    ? feuilles.filter(f => {
+        const m = medecins.find(m => String(m.userId) === String(userId));
+        return m && String(f.medecinId) === String(m.id);
+      })
+    : feuilles;
 
   return (
     <Box>
@@ -64,6 +71,44 @@ const ActivityTab = ({ consultations, assures, medecins, userId, role }: Activit
           </Paper>
         </Grid>
       </Grid>
+
+      {role === 'medecin' && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
+            Mes Patients ({assures.length})
+          </Typography>
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nom</TableCell>
+                  <TableCell>Prénom</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>N° Sécu</TableCell>
+                  <TableCell>Sexe</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Téléphone</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {assures.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">Aucun patient attribué.</TableCell>
+                  </TableRow>
+                ) : (
+                  assures.map((a) => (
+                    <TableRow key={a.id}>
+                      <TableCell sx={{ fontWeight: 500 }}>{a.nom}</TableCell>
+                      <TableCell>{a.prenom}</TableCell>
+                      <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{maskSSN(a.numSecu)}</TableCell>
+                      <TableCell>{a.sexe}</TableCell>
+                      <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{a.telephone}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      )}
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
@@ -103,6 +148,48 @@ const ActivityTab = ({ consultations, assures, medecins, userId, role }: Activit
           </Table>
         </TableContainer>
       </Paper>
+
+      {role === 'medecin' && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
+            Feuilles de maladie ({myFeuilles.length})
+          </Typography>
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Patient</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Détails</TableCell>
+                  <TableCell>Médecin</TableCell>
+                  <TableCell>Statut</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {myFeuilles.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">Aucune feuille de maladie.</TableCell>
+                  </TableRow>
+                ) : (
+                  myFeuilles.slice().reverse().map((f) => {
+                    return (
+                      <TableRow key={f.id}>
+                        <TableCell>{formatDate(f.date)}</TableCell>
+                        <TableCell>{getAssureName(f.assureId)}</TableCell>
+                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{f.details.substring(0, 50)}...</TableCell>
+                        <TableCell>{getMedecinName(f.medecinId)}</TableCell>
+                        <TableCell>
+                          <Chip label={f.validee ? 'Validée' : 'En attente'} size="small" color={f.validee ? 'success' : 'warning'} />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      )}
     </Box>
   );
 };

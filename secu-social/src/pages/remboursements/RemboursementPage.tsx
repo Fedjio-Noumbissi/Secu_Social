@@ -4,8 +4,12 @@ import {
   Box, Typography, Paper, Grid, TextField, Button, MenuItem,
   Alert, Card, CardContent, Chip, Divider, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Tooltip,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  IconButton, Menu, ListItemIcon, ListItemText
 } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoIcon from '@mui/icons-material/Info';
 import { apiService } from '../../services/api';
 import { setAssures } from '../../features/assures/assuresSlice';
 import { setFeuilles } from '../../features/feuillesMaladie/feuillesSlice';
@@ -34,6 +38,20 @@ const RemboursementPage = () => {
   const [calculatedTaux, setCalculatedTaux] = useState(0);
   const [isCalculated, setIsCalculated] = useState(false);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [remboursementDetails, setRemboursementDetails] = useState<Remboursement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuRemboursement, setMenuRemboursement] = useState<Remboursement | null>(null);
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>, r: Remboursement) => {
+    setAnchorEl(event.currentTarget);
+    setMenuRemboursement(r);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+    setMenuRemboursement(null);
+  };
 
   const [printData, setPrintData] = useState<{
     remb: Remboursement;
@@ -81,7 +99,7 @@ const RemboursementPage = () => {
     const consultationId = feuille.consultationId;
       const consultation = consultations.find((c) => String(c.id) === String(consultationId));
     if (consultation) {
-      const medecin = medecins.find((m) => String(m.id) === String(consultation.medecinId));
+      const medecin = medecins.find((m) => String(m.id) === String(feuille.medecinId));
       if (medecin) {
         const taux = medecin.specialite === 'generaliste' ? 100 : 80;
         const montantTotal = Math.floor(Math.random() * 15000) + 3000;
@@ -133,8 +151,8 @@ const RemboursementPage = () => {
 
   const handlePrint = async (remb: Remboursement) => {
     const assure = assures.find((a) => String(a.id) === String(remb.assureId));
-    const consultation = consultations.find((c) => String(c.id) === String(remb.consultationId));
-    const medecin = consultation ? medecins.find((m) => String(m.id) === String(consultation.medecinId)) : undefined;
+    const feuille = feuilles.find((f) => String(f.id) === String(remb.feuilleMaladieId));
+    const medecin = feuille ? medecins.find((m) => String(m.id) === String(feuille.medecinId)) : undefined;
 
     // Mark as printed immediately
     if (!remb.imprime) {
@@ -405,20 +423,9 @@ const RemboursementPage = () => {
                       />
                     </TableCell>
                     <TableCell align="center">
-                      <Tooltip title={r.imprime ? "Déjà imprimé" : "Imprimer le reçu"}>
-                        <span>
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => handlePrint(r)}
-                            startIcon={<PrintIcon />}
-                            disabled={r.imprime}
-                          >
-                            Reçu
-                          </Button>
-                        </span>
-                      </Tooltip>
+                      <IconButton onClick={(e) => handleOpenMenu(e, r)} size="small">
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -427,6 +434,76 @@ const RemboursementPage = () => {
           </TableContainer>
         </Paper>
       </Box>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={() => {
+          if (menuRemboursement) {
+            setRemboursementDetails(menuRemboursement);
+            setDetailsModalOpen(true);
+          }
+          handleCloseMenu();
+        }}>
+          <ListItemIcon>
+            <InfoIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Détails</ListItemText>
+        </MenuItem>
+        <MenuItem 
+          onClick={() => {
+            if (menuRemboursement) {
+              handlePrint(menuRemboursement);
+            }
+            handleCloseMenu();
+          }}
+          disabled={menuRemboursement?.imprime}
+        >
+          <ListItemIcon>
+            <PrintIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Reçu</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      <Dialog open={detailsModalOpen} onClose={() => setDetailsModalOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Détails du Remboursement</DialogTitle>
+        <DialogContent dividers>
+          {remboursementDetails && (() => {
+            const a = assures.find(x => String(x.id) === String(remboursementDetails.assureId));
+            const f = feuilles.find(x => String(x.id) === String(remboursementDetails.feuilleMaladieId));
+            const c = consultations.find(x => String(x.id) === String(remboursementDetails.consultationId));
+            const m = f ? medecins.find(x => String(x.id) === String(f.medecinId)) : null;
+            return (
+              <Box>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }} color="primary">Informations de l'assuré</Typography>
+                <Typography variant="body2">Nom: {a?.prenom} {a?.nom}</Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>N° Sécu: {a?.numSecu}</Typography>
+
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }} color="primary">Consultation</Typography>
+                <Typography variant="body2">Médecin: {m ? `Dr ${m.prenom} ${m.nom}` : 'N/A'}</Typography>
+                <Typography variant="body2">Spécialité: {m?.specialite === 'generaliste' ? 'Généraliste' : 'Spécialiste'}</Typography>
+                <Typography variant="body2" sx={{ mb: 2 }}>Motif: {c?.motif}</Typography>
+
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }} color="primary">Paiement</Typography>
+                <Typography variant="body2">Montant Total: {formatCurrency(remboursementDetails.montantTotal)}</Typography>
+                <Typography variant="body2">Taux: {remboursementDetails.taux}%</Typography>
+                <Typography variant="body2">Montant Remboursé: {formatCurrency(remboursementDetails.montantRembourse)}</Typography>
+                <Typography variant="body2">Mode: {remboursementDetails.modePaiement === 'virement' ? 'Virement Bancaire' : 'Espèces'}</Typography>
+                {remboursementDetails.rib && (
+                  <Typography variant="body2">RIB: {remboursementDetails.rib}</Typography>
+                )}
+                <Typography variant="body2" sx={{ mt: 2 }} color="text.secondary">Effectué le: {formatDate(remboursementDetails.date)}</Typography>
+              </Box>
+            );
+          })()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailsModalOpen(false)}>Fermer</Button>
+        </DialogActions>
+      </Dialog>
 
       <div
         ref={printRef}

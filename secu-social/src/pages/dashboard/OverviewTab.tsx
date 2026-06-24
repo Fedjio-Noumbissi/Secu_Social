@@ -16,7 +16,7 @@ import {
   Payments as PaymentsIcon,
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
-import type { DashboardStats, Remboursement, Consultation, Assure } from '../../types';
+import type { DashboardStats, Remboursement, Consultation, Assure, FeuilleMaladie } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/dateHelpers';
 
@@ -25,11 +25,12 @@ interface OverviewTabProps {
   role: string;
   recentRemboursements: Remboursement[];
   consultations: Consultation[];
+  feuilles: FeuilleMaladie[];
   assures: Assure[];
   userName: string;
 }
 
-const OverviewTab = ({ stats, role, recentRemboursements, consultations, assures, userName }: OverviewTabProps) => {
+const OverviewTab = ({ stats, role, recentRemboursements, consultations, feuilles, assures, userName }: OverviewTabProps) => {
   return (
     <Box>
       <Typography variant="h6" sx={{ mb: 2, color: '#5D4037' }}>
@@ -177,6 +178,28 @@ const OverviewTab = ({ stats, role, recentRemboursements, consultations, assures
                 <Chip label={formatDate(c.date)} size="small" variant="outlined" />
               </ListItem>
             ))}
+          </List>
+        </Paper>
+      )}
+      {role === 'medecin' && feuilles && feuilles.length > 0 && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
+            Dernières feuilles de maladie
+          </Typography>
+          <List dense>
+            {feuilles.slice(-5).reverse().map((f) => {
+              const assure = assures.find(a => String(a.id) === String(f.assureId));
+              return (
+                <ListItem key={f.id} divider>
+                  <ListItemText
+                    primary={`Feuille pour ${assure?.prenom || ''} ${assure?.nom || ''}`}
+                    secondary={f.details ? `${f.details.substring(0, 60)}...` : formatDate(f.date)}
+                  />
+                  <Chip label={formatDate(f.date)} size="small" variant="outlined" />
+                  {f.validee && <Chip label="Validée" size="small" color="success" sx={{ ml: 1 }} />}
+                </ListItem>
+              );
+            })}
           </List>
         </Paper>
       )}
