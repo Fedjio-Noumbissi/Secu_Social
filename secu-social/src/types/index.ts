@@ -40,6 +40,8 @@ export interface Medecin {
   adresse: string;
   estAussiAssure: boolean;
   assureId?: string;
+  sexe?: 'M' | 'F';
+  dateNaissance?: string;
 }
 
 export interface Consultation {

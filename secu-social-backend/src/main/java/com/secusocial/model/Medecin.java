@@ -39,6 +39,12 @@ public class Medecin {
   @Column(name = "assure_id")
   private String assureId;
 
+  @Column(name = "sexe", length = 1)
+  private String sexe;
+
+  @Column(name = "date_naissance_txt", length = 10)
+  private String dateNaissance;
+
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
   public String getUserId() { return userId; }
@@ -61,4 +67,8 @@ public class Medecin {
   public void setEstAussiAssure(boolean estAussiAssure) { this.estAussiAssure = estAussiAssure; }
   public String getAssureId() { return assureId; }
   public void setAssureId(String assureId) { this.assureId = assureId; }
+  public String getSexe() { return sexe; }
+  public void setSexe(String sexe) { this.sexe = sexe; }
+  public String getDateNaissance() { return dateNaissance; }
+  public void setDateNaissance(String dateNaissance) { this.dateNaissance = dateNaissance; }
 }

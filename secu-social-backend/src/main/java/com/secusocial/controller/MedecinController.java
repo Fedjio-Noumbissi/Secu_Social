@@ -49,6 +49,11 @@ public class MedecinController {
         Object val = u.get("assureId");
         existing.setAssureId(val != null ? String.valueOf(val) : null);
       }
+      if (u.containsKey("sexe")) existing.setSexe((String) u.get("sexe"));
+      if (u.containsKey("dateNaissance")) {
+        Object val = u.get("dateNaissance");
+        existing.setDateNaissance(val != null ? String.valueOf(val) : null);
+      }
       return ResponseEntity.ok(repo.save(existing));
     }).orElse(ResponseEntity.notFound().build());
   }

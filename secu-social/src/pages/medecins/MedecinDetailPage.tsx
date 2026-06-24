@@ -66,6 +66,16 @@ const MedecinDetailPage = () => {
                   <TableRow><TableCell sx={{ color: '#666', width: 150 }}>Matricule</TableCell><TableCell sx={{ fontWeight: 600 }}>{medecin.matricule}</TableCell></TableRow>
                   <TableRow><TableCell sx={{ color: '#666' }}>Nom</TableCell><TableCell sx={{ fontWeight: 600 }}>{medecin.nom}</TableCell></TableRow>
                   <TableRow><TableCell sx={{ color: '#666' }}>Prénom</TableCell><TableCell sx={{ fontWeight: 600 }}>{medecin.prenom}</TableCell></TableRow>
+                  <TableRow><TableCell sx={{ color: '#666' }}>Sexe</TableCell><TableCell>
+                    {medecin.sexe
+                      ? <Chip label={medecin.sexe === 'M' ? 'Masculin' : 'Féminin'} size="small" color={medecin.sexe === 'M' ? 'info' : 'secondary'} />
+                      : <span style={{ color: '#999' }}>—</span>}
+                  </TableCell></TableRow>
+                  <TableRow><TableCell sx={{ color: '#666' }}>Date de naissance</TableCell><TableCell sx={{ fontWeight: 600 }}>
+                    {medecin.dateNaissance
+                      ? new Date(medecin.dateNaissance).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                      : <span style={{ color: '#999' }}>—</span>}
+                  </TableCell></TableRow>
                   <TableRow><TableCell sx={{ color: '#666' }}>Spécialité</TableCell><TableCell>
                     <Chip label={medecin.specialite === 'generaliste' ? 'Généraliste' : 'Spécialiste'} size="small" color={medecin.specialite === 'generaliste' ? 'success' : 'warning'} />
                   </TableCell></TableRow>

@@ -26,6 +26,8 @@ const validationSchema = Yup.object({
     .required('Le téléphone est requis')
     .matches(/^\+237[6-9]\d{8}$/, 'Format: +237XXXXXXXXX (9 chiffres après +237)'),
   adresse: Yup.string().required('L\'adresse est requise'),
+  sexe: Yup.string().oneOf(['M', 'F'], 'Veuillez choisir un sexe').required('Le sexe est requis'),
+  dateNaissance: Yup.string().required('La date de naissance est requise'),
 });
 
 const MedecinFormPage = () => {
@@ -43,6 +45,8 @@ const MedecinFormPage = () => {
     telephone: '+237',
     adresse: '',
     estAussiAssure: false,
+    sexe: 'M' as 'M' | 'F',
+    dateNaissance: '',
   });
   const [loading, setLoading] = useState(isEditing);
   const [submitError, setSubmitError] = useState('');
@@ -233,6 +237,38 @@ const MedecinFormPage = () => {
                     helperText={touched.adresse && errors.adresse}
                     multiline
                     rows={2}
+                    required
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <TextField
+                    fullWidth
+                    select
+                    name="sexe"
+                    label="Sexe"
+                    value={values.sexe}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.sexe && !!errors.sexe}
+                    helperText={touched.sexe && errors.sexe}
+                    required
+                  >
+                    <MenuItem value="M">Masculin</MenuItem>
+                    <MenuItem value="F">Féminin</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <TextField
+                    fullWidth
+                    name="dateNaissance"
+                    label="Date de naissance"
+                    type="date"
+                    value={values.dateNaissance}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.dateNaissance && !!errors.dateNaissance}
+                    helperText={touched.dateNaissance && errors.dateNaissance}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     required
                   />
                 </Grid>

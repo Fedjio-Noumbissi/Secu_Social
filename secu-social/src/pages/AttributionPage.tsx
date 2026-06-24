@@ -42,6 +42,8 @@ const AttributionPage = () => {
 
   // Only généralistes can be treating doctors
   const generalistes = medecins.filter((m) => m.specialite === 'generaliste');
+  // For a médecin-assuré, exclude other médecin-assurés from the treating doctor list
+  const generalistesForMedecinAssure = generalistes.filter((m) => !m.estAussiAssure);
 
   // Build list of médecins who are also insured
   const buildMedecinAssures = (): Assure[] => {
@@ -119,8 +121,8 @@ const AttributionPage = () => {
       id: String(maxId + 1),
       nom: medecin.nom || '',
       prenom: medecin.prenom || '',
-      dateNaissance: '',
-      sexe: 'M',
+      dateNaissance: medecin.dateNaissance || '',
+      sexe: (medecin.sexe as 'M' | 'F') || 'M',
       numSecu: medecin.matricule || '',
       adresse: medecin.adresse || '',
       telephone: medecin.telephone || '',
@@ -328,34 +330,39 @@ const AttributionPage = () => {
                   </CardContent>
                 </Card>
 
-                {generalistes.length === 0 ? (
-                  <Alert severity="warning" sx={{ mb: 2 }}>
-                    Aucun médecin généraliste disponible. Veuillez d'abord enregistrer des généralistes.
-                  </Alert>
-                ) : (
-                  <TextField
-                    fullWidth
-                    select
-                    label="Choisir un médecin généraliste"
-                    value={selectedMedecinId}
-                    onChange={(e) => setSelectedMedecinId(e.target.value)}
-                    size="small"
-                    sx={{ mb: 2 }}
-                  >
-                    {generalistes.map((med) => (
-                      <MenuItem key={med.id} value={med.id}>
-                        Dr. {med.prenom} {med.nom} — {med.matricule}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                )}
+                {(() => {
+                    const isMedecinAssure = isSynthetic(selectedAssure.id) ||
+                      medecins.some(m => m.assureId && String(m.assureId) === String(selectedAssure.id) && m.estAussiAssure);
+                    const availableGeneralistes = isMedecinAssure ? generalistesForMedecinAssure : generalistes;
+                    return availableGeneralistes.length === 0 ? (
+                      <Alert severity="warning" sx={{ mb: 2 }}>
+                        Aucun médecin généraliste disponible. Veuillez d'abord enregistrer des généralistes.
+                      </Alert>
+                    ) : (
+                      <TextField
+                        fullWidth
+                        select
+                        label="Choisir un médecin généraliste"
+                        value={selectedMedecinId}
+                        onChange={(e) => setSelectedMedecinId(e.target.value)}
+                        size="small"
+                        sx={{ mb: 2 }}
+                      >
+                        {availableGeneralistes.map((med) => (
+                          <MenuItem key={med.id} value={med.id}>
+                            Dr. {med.prenom} {med.nom} — {med.matricule}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    );
+                  })()}
 
                 <Box sx={{ display: 'flex', gap: 2 }}>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={handleAssign}
-                    disabled={!selectedMedecinId || generalistes.length === 0}
+                    disabled={!selectedMedecinId}
                   >
                     {selectedAssure.medecinTraitantId ? 'Changer le MT' : 'Attribuer le MT'}
                   </Button>
