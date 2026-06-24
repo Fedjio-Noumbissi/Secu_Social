@@ -196,12 +196,12 @@ const AttributionPage = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
         Attribution du médecin traitant
       </Typography>
 
       {/* Tab switcher */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+      <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
         <Button
           variant={activeTab === 'assures' ? 'contained' : 'outlined'}
           color="primary"
@@ -251,7 +251,7 @@ const AttributionPage = () => {
               size="small"
               sx={{ mb: 2 }}
             />
-            <Box sx={{ maxHeight: 350, overflow: 'auto' }}>
+            <Box sx={{ maxHeight: { xs: 250, sm: 350 }, overflow: 'auto' }}>
               {filteredList.map((a) => (
                 <Card
                   key={a.id}

@@ -183,7 +183,7 @@ const DashboardPage = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 1 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 1, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
         Tableau de bord
       </Typography>
 

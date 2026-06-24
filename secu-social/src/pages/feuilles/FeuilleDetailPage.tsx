@@ -108,16 +108,16 @@ const FeuilleDetailPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <Button variant="outlined" size="small" onClick={() => navigate('/feuilles-maladie')} startIcon={<ArrowBackIcon />}>
             Retour
           </Button>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.3rem', sm: '1.75rem', md: '2rem' } }}>
             Détail de la feuille de maladie
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', width: { xs: '100%', sm: 'auto' } }}>
           {user?.role === 'assureur' && feuille && !feuille.validee && (
             <Button
               variant="contained"
@@ -141,7 +141,7 @@ const FeuilleDetailPage = () => {
 
       <Paper sx={{ p: { xs: 2, md: 4 }, mb: 3 }}>
         <Box className="print-header" sx={{ display: 'none', textAlign: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', letterSpacing: 2 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', letterSpacing: 2, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
             SECU SOCIALE
           </Typography>
           <Typography variant="body1" sx={{ color: '#666' }}>

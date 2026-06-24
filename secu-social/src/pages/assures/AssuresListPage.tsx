@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box, Typography, Button, TextField, InputAdornment, IconButton,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Chip, Tooltip, TablePagination, Dialog, DialogTitle,
+  Paper, Chip, TablePagination, Dialog, DialogTitle,
   DialogContent, DialogContentText, DialogActions,
   Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
@@ -96,8 +96,8 @@ const AssuresListPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
           Gestion des assurés
         </Typography>
         <Button
@@ -105,6 +105,7 @@ const AssuresListPage = () => {
           color="primary"
           startIcon={<AddIcon />}
           onClick={() => navigate('/assures/new')}
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Nouvel assuré
         </Button>
@@ -130,7 +131,7 @@ const AssuresListPage = () => {
         />
       </Paper>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>

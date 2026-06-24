@@ -64,7 +64,7 @@ const DashboardHeader = () => {
   return (
     <AppBar position="sticky" elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pl: { xs: '36px', sm: 0 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pl: { xs: '40px', sm: 0 } }}>
           <Box
             sx={{
               width: 36,
@@ -83,14 +83,14 @@ const DashboardHeader = () => {
           >
             SS
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#8B4513', letterSpacing: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: '#8B4513', letterSpacing: 1, display: { xs: 'none', sm: 'block' } }}>
             Secu Sociale
           </Typography>
         </Box>
 
         {user && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', display: { xs: 'none', md: 'block' } }}>
               {getRoleLabel(user.role)}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

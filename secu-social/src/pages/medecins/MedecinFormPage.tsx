@@ -124,7 +124,7 @@ const MedecinFormPage = () => {
 
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
         {isEditing ? 'Modifier un médecin' : 'Enregistrer un nouveau médecin'}
       </Typography>
 

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Box, Typography, Paper, Grid, TextField, Button, MenuItem,
   Alert, Card, CardContent, Chip, Divider, Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow, Tooltip,
+  TableCell, TableContainer, TableHead, TableRow,
   Dialog, DialogTitle, DialogContent, DialogActions,
   IconButton, Menu, ListItemIcon, ListItemText
 } from '@mui/material';
@@ -193,7 +193,7 @@ const RemboursementPage = () => {
   return (
     <>
       <Box className={printData ? 'no-print' : ''}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
           Remboursements
         </Typography>
 

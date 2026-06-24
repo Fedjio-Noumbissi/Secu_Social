@@ -12,7 +12,7 @@ const LandingFooter = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'space-between' }, flexWrap: 'wrap', gap: 3, textAlign: { xs: 'center', sm: 'left' } }}>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
               Secu Sociale

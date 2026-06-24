@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import PrintIcon from '@mui/icons-material/Print';
 import { apiService } from '../../services/api';
-import type { Remboursement, Assure } from '../../types';
+import type { Remboursement } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/dateHelpers';
 import { exportCSV, exportJSON, exportPDF } from '../../utils/exportHelpers';
@@ -129,8 +129,8 @@ const RapportsPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
           Rapports et statistiques
         </Typography>
         <Button
@@ -138,6 +138,7 @@ const RapportsPage = () => {
           color="primary"
           onClick={handlePrint}
           startIcon={<PrintIcon />}
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Imprimer
         </Button>
@@ -160,7 +161,7 @@ const RapportsPage = () => {
             </TextField>
           </Grid>
           <Grid size={{ xs: 12, sm: 8 }}>
-            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'flex-start', sm: 'flex-end' }, flexWrap: 'wrap' }}>
               <Button size="small" variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={() => handleExport('csv')}>
                 CSV
               </Button>

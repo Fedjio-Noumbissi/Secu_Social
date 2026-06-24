@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
+  TableContainer, TableHead, TableRow, TablePagination, Chip, IconButton,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
   Menu, MenuItem, ListItemIcon, ListItemText
 } from '@mui/material';
@@ -77,16 +77,16 @@ const FeuillesListPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
           Feuilles de maladie
         </Typography>
-        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => navigate('/feuilles-maladie/new')}>
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => navigate('/feuilles-maladie/new')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
           Nouvelle feuille
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>

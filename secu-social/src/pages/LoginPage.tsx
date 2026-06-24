@@ -63,7 +63,7 @@ const LoginPage = () => {
         <Paper
           elevation={6}
           sx={{
-            p: 4,
+            p: { xs: 3, sm: 4 },
             borderRadius: 4,
             backdropFilter: 'blur(10px)',
             background: 'rgba(255,255,255,0.95)',

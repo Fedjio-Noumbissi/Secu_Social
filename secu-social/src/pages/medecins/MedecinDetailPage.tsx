@@ -47,12 +47,12 @@ const MedecinDetailPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <Button variant="outlined" size="small" onClick={() => navigate('/medecins')} startIcon={<ArrowBackIcon />}>Retour</Button>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>Détails du médecin</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.3rem', sm: '1.75rem', md: '2rem' } }}>Détails du médecin</Typography>
         </Box>
-        <Button variant="contained" color="primary" startIcon={<EditIcon />} onClick={() => navigate(`/medecins/${id}/edit`)}>Modifier</Button>
+        <Button variant="contained" color="primary" startIcon={<EditIcon />} onClick={() => navigate(`/medecins/${id}/edit`)} sx={{ width: { xs: '100%', sm: 'auto' } }}>Modifier</Button>
       </Box>
 
       <Paper sx={{ p: { xs: 2, md: 4 }, mb: 3 }}>

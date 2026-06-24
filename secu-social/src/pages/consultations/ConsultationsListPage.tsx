@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, TablePagination, Chip, IconButton, Tooltip,
+  TableHead, TableRow, TablePagination, IconButton,
   Menu, MenuItem, ListItemIcon, ListItemText,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
@@ -82,16 +82,16 @@ const ConsultationsListPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
           Consultations
         </Typography>
-        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => navigate('/consultations/new')}>
+        <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => navigate('/consultations/new')} fullWidth={false} sx={{ width: { xs: '100%', sm: 'auto' } }}>
           Nouvelle consultation
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>
