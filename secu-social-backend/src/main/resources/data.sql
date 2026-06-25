@@ -1,6 +1,6 @@
 TRUNCATE users, assures, medecins, consultations, consultation_prescriptions, prescriptions_medicaments, prescriptions_specialistes, feuilles_maladie, remboursements RESTART IDENTITY CASCADE;
 
-INSERT INTO users (id, email, password, role, profil_id) VALUES (1, 'assureur@secu-social.cm', 'admin123', 'assureur', '');
+INSERT INTO users (id, email, password, role, profil_id) VALUES (1, 'assureur@secu-sociale.cm', 'admin123', 'assureur', '');
 INSERT INTO users (id, email, password, role, profil_id) VALUES (2, 'medecin@secu-social.cm', 'medecin123', 'medecin', '1');
 INSERT INTO users (id, email, password, role, profil_id) VALUES (4, 'specialiste@secu-social.cm', 'spec123', 'medecin', '2');
 
