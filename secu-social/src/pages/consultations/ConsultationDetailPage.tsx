@@ -76,16 +76,16 @@ const ConsultationDetailPage = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 3, flexWrap: 'wrap', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button variant="outlined" size="small" onClick={() => navigate('/consultations')} startIcon={<ArrowBackIcon />}>
+          <Button variant="outlined" size="small" onClick={() => navigate('/consultations')} startIcon={<ArrowBackIcon />} sx={{ width: { xs: '100%', sm: 'auto' } }}>
             Retour
           </Button>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513' }}>
             Détail de la consultation
           </Typography>
         </Box>
-        <Button variant="contained" color="primary" startIcon={<PrintIcon />} onClick={() => window.print()}>
+        <Button variant="contained" color="primary" startIcon={<PrintIcon />} onClick={() => window.print()} sx={{ width: { xs: '100%', sm: 'auto' } }}>
           Imprimer
         </Button>
       </Box>
@@ -188,7 +188,7 @@ const ConsultationDetailPage = () => {
                   Prescriptions médicamenteuses
                 </Typography>
                 <Divider sx={{ mb: 1.5, borderColor: '#D2691E' }} />
-                <TableContainer>
+                <TableContainer sx={{ overflowX: 'auto' }}>
                   <Table size="small">
                     <TableHead>
                       <TableRow>

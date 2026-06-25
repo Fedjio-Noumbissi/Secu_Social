@@ -1,5 +1,5 @@
 import { useState, ReactNode } from 'react';
-import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import { Box, IconButton, Container, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardHeader from '../components/layout/DashboardHeader';
 import DashboardFooter from '../components/layout/DashboardFooter';
@@ -24,7 +24,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {!isDesktop && (
           <IconButton
             onClick={(e) => { (e.target as HTMLElement).blur(); setMobileOpen(true); }}
-            sx={{ position: 'fixed', top: 12, left: 8, zIndex: 1200, color: '#8B4513' }}
+            sx={{ position: 'fixed', top: { xs: 10, sm: 12 }, left: { xs: 6, sm: 8 }, zIndex: 1300, color: '#8B4513' }}
             aria-label="Ouvrir le menu"
           >
             <MenuIcon />
@@ -39,9 +39,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             display: 'flex',
             flexDirection: 'column',
             minHeight: 'calc(100vh - 64px)',
+            overflow: 'auto',
           }}
         >
-          {children}
+          <Container maxWidth="xl" sx={{ px: { xs: 0, sm: 1, md: 2 } }}>
+            {children}
+          </Container>
         </Box>
       </Box>
       <Box>

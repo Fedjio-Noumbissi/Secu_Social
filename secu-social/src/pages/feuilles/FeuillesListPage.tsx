@@ -100,7 +100,7 @@ const FeuillesListPage = () => {
           <TableBody>
             {paginated.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                   Aucune feuille de maladie.
                 </TableCell>
               </TableRow>

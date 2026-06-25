@@ -162,13 +162,13 @@ const RapportsPage = () => {
           </Grid>
           <Grid size={{ xs: 12, sm: 8 }}>
             <Box sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'flex-start', sm: 'flex-end' }, flexWrap: 'wrap' }}>
-              <Button size="small" variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={() => handleExport('csv')}>
+              <Button size="small" variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={() => handleExport('csv')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                 CSV
               </Button>
-              <Button size="small" variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={() => handleExport('json')}>
+              <Button size="small" variant="outlined" color="primary" startIcon={<FileDownloadIcon />} onClick={() => handleExport('json')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                 JSON
               </Button>
-              <Button size="small" variant="contained" color="primary" onClick={handleExportPDF}>
+              <Button size="small" variant="contained" color="primary" onClick={handleExportPDF} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                 PDF
               </Button>
             </Box>
@@ -279,7 +279,7 @@ const RapportsPage = () => {
                 Aucun remboursement en attente. Tout est à jour.
               </Typography>
             ) : (
-              <TableContainer>
+              <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>

@@ -163,7 +163,7 @@ const ConsultationFormPage = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+    <Box sx={{ maxWidth: { xs: '100%', sm: 720, md: 960 }, mx: 'auto' }}>
       <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
         {isEdit ? 'Modifier la consultation' : 'Nouvelle consultation'}
       </Typography>
@@ -300,10 +300,10 @@ const ConsultationFormPage = () => {
                 </Grid>
               </Grid>
               <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: { xs: 'center', sm: 'flex-end' }, flexWrap: 'wrap' }}>
-                <Button variant="outlined" color="primary" onClick={() => navigate('/consultations')}>
+                <Button variant="outlined" color="primary" onClick={() => navigate('/consultations')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   Annuler
                 </Button>
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="primary" sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   Enregistrer la consultation
                 </Button>
               </Box>

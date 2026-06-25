@@ -59,7 +59,7 @@ const RemboursementsTab = ({ remboursements }: RemboursementsTabProps) => {
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
           Historique des remboursements
         </Typography>
-        <TableContainer>
+        <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
               <TableRow>

@@ -363,11 +363,12 @@ const AttributionPage = () => {
                     color="primary"
                     onClick={handleAssign}
                     disabled={!selectedMedecinId}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                   >
                     {selectedAssure.medecinTraitantId ? 'Changer le MT' : 'Attribuer le MT'}
                   </Button>
                   {selectedAssure.medecinTraitantId && (
-                    <Button variant="outlined" color="error" onClick={handleRemove}>
+                    <Button variant="outlined" color="error" onClick={handleRemove} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                       Retirer le MT
                     </Button>
                   )}

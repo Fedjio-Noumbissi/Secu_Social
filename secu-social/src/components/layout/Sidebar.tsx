@@ -62,8 +62,8 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
   };
 
   const drawerContent = (
-    <Box sx={{ mt: 1 }}>
-      <List sx={{ px: 1 }}>
+    <Box sx={{ mt: 1, overflowY: 'auto' }}>
+      <List sx={{ px: { xs: 0.5, md: 1 } }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
@@ -74,6 +74,7 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
               sx={{
                 borderRadius: 2,
                 mb: 0.5,
+                minHeight: { xs: 48, md: 44 },
                 backgroundColor: isActive ? 'rgba(139, 69, 19, 0.08)' : 'transparent',
                 '&:hover': {
                   backgroundColor: 'rgba(139, 69, 19, 0.12)',
@@ -85,10 +86,11 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
                   fontWeight: isActive ? 700 : 500,
                   color: isActive ? '#8B4513' : '#333',
                   fontFamily: '"Centray", "Roboto", sans-serif',
+                  fontSize: { xs: '0.95rem', md: '0.9rem' },
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40 }}>
+              <ListItemIcon sx={{ minWidth: { xs: 44, md: 40 } }}>
                 {iconMap[item.icon] || <DashboardIcon />}
               </ListItemIcon>
               <ListItemText primary={item.label} />

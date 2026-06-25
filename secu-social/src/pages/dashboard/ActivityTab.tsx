@@ -77,7 +77,7 @@ const ActivityTab = ({ consultations, feuilles, assures, medecins, userId, role 
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
             Mes Patients ({assures.length})
           </Typography>
-          <TableContainer>
+          <TableContainer sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -114,7 +114,7 @@ const ActivityTab = ({ consultations, feuilles, assures, medecins, userId, role 
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
           Consultations ({myConsultations.length})
         </Typography>
-        <TableContainer>
+        <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -154,7 +154,7 @@ const ActivityTab = ({ consultations, feuilles, assures, medecins, userId, role 
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#8B4513' }}>
             Feuilles de maladie ({myFeuilles.length})
           </Typography>
-          <TableContainer>
+          <TableContainer sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
                 <TableRow>

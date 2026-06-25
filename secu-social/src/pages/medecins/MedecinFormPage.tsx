@@ -123,7 +123,7 @@ const MedecinFormPage = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+    <Box sx={{ maxWidth: { xs: '100%', sm: 720, md: 960 }, mx: 'auto' }}>
       <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3, fontSize: { xs: '1.4rem', sm: '1.75rem', md: '2rem' } }}>
         {isEditing ? 'Modifier un médecin' : 'Enregistrer un nouveau médecin'}
       </Typography>
@@ -285,10 +285,10 @@ const MedecinFormPage = () => {
                 </Grid>
               </Grid>
               <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: { xs: 'center', sm: 'flex-end' }, flexWrap: 'wrap' }}>
-                <Button variant="outlined" color="primary" onClick={() => navigate('/medecins')}>
+                <Button variant="outlined" color="primary" onClick={() => navigate('/medecins')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   Annuler
                 </Button>
-                <Button type="submit" variant="contained" color="primary">
+                <Button type="submit" variant="contained" color="primary" sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   {isEditing ? 'Enregistrer les modifications' : 'Enregistrer le médecin'}
                 </Button>
               </Box>

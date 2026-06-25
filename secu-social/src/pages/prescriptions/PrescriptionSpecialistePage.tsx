@@ -83,7 +83,7 @@ const PrescriptionSpecialistePage = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 700, mx: 'auto' }}>
+    <Box sx={{ maxWidth: { xs: '100%', sm: 700, md: 960 }, mx: 'auto' }}>
       <Typography variant="h4" sx={{ fontWeight: 700, color: '#8B4513', mb: 3 }}>
         Prescription consultation spécialiste
       </Typography>
@@ -189,10 +189,10 @@ const PrescriptionSpecialistePage = () => {
                 </Grid>
               </Grid>
               <Box sx={{ display: 'flex', gap: 2, mt: 4, justifyContent: { xs: 'center', sm: 'flex-end' }, flexWrap: 'wrap' }}>
-                <Button variant="outlined" color="primary" onClick={() => navigate('/consultations')}>
+                <Button variant="outlined" color="primary" onClick={() => navigate('/consultations')} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   Annuler
                 </Button>
-                <Button type="submit" variant="contained" color="primary" disabled={specialistes.length === 0}>
+                <Button type="submit" variant="contained" color="primary" disabled={specialistes.length === 0} sx={{ width: { xs: '100%', sm: 'auto' } }}>
                   Prescrire consultation spécialiste
                 </Button>
               </Box>
