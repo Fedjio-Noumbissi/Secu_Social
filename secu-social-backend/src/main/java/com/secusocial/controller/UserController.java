@@ -58,9 +58,31 @@ public class UserController {
   public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
     String email = body.get("email");
     String password = body.get("password");
-    return repo.findByEmail(email)
-        .filter(u -> u.getPassword().equals(password))
-        .map(u -> ResponseEntity.ok((Object) u))
-        .orElse(ResponseEntity.status(401).body(Map.of("error", "Email ou mot de passe incorrect")));
+
+    Optional<User> optUser = repo.findByEmail(email);
+    if (optUser.isEmpty()) {
+      return ResponseEntity.status(401).body(Map.of("error", "Email ou mot de passe incorrect"));
+    }
+
+    User user = optUser.get();
+
+    if (user.isAccountLocked()) {
+      return ResponseEntity.status(403).body(Map.of("error", "Votre compte est bloqué suite à 3 tentatives infructueuses. Veuillez contacter l'administrateur."));
+    }
+
+    if (!user.getPassword().equals(password)) {
+      user.setFailedAttempts(user.getFailedAttempts() + 1);
+      if (user.getFailedAttempts() >= 3) {
+        user.setAccountLocked(true);
+        repo.save(user);
+        return ResponseEntity.status(403).body(Map.of("error", "Votre compte est bloqué suite à 3 tentatives infructueuses. Veuillez contacter l'administrateur."));
+      }
+      repo.save(user);
+      return ResponseEntity.status(401).body(Map.of("error", "Email ou mot de passe incorrect. Tentatives restantes : " + (3 - user.getFailedAttempts())));
+    }
+
+    user.setFailedAttempts(0);
+    repo.save(user);
+    return ResponseEntity.ok(user);
   }
 }
